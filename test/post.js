@@ -36,9 +36,9 @@ let fs = require('fs');
 		let p3 = await db.post.load(id);
 		tap.equal(p3, null);
 
-		//if (fs.existsSync(db_path)) {
-			// fs.unlinkSync(db_path);
-		//}
+		if (fs.existsSync(db_path)) {
+			fs.unlinkSync(db_path);
+		}
 
 		tap.pass('post.js');
 	} catch(err) {
