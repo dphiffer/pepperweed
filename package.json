@@ -21,6 +21,7 @@
   "author": "Dan Phiffer <dan@phiffer.org>",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "chokidar-cli": "^3.0.0",
     "ejs": "^3.1.6",
     "fastify": "^3.25.0",

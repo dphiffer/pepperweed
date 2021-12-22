@@ -8,6 +8,8 @@ Perrenial media archive
 
 ## Setup
 
+Install dependencies, setup secrets, start the server.
+
 ```
 npm run install
 npm run setup
@@ -24,4 +26,4 @@ npm test
 
 * `PORT`: the port number to run the server, defaults to `3000`
 * `HOST`: the host to respond to, defaults to `0.0.0.0`
-* `DB_PATH`: path to the SQLite database, defaults to `main.db`
+* `DB_PATH`: path to the SQLite database, defaults to `./main.db`
