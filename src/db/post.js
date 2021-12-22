@@ -23,7 +23,7 @@ class PostQueries extends Queries {
 			WHERE id = ?
 		`, id);
 		if (! data) {
-			return null;
+			throw new Queries.NotFoundError(`Post ${id} not found`);
 		}
 		return data;
 	}
@@ -43,6 +43,8 @@ class PostQueries extends Queries {
 
 	async update(post) {
 		let db = await this.connect();
+		let data = await this.load(post.id);
+		data = Object.assign(data, post.data);
 		let rsp = await db.run(`
 			UPDATE post
 			SET slug = $slug,
@@ -50,8 +52,8 @@ class PostQueries extends Queries {
 			    updated = CURRENT_TIMESTAMP
 			WHERE id = $id
 		`, {
-			$slug: post.data.slug,
-			$title: post.data.title,
+			$slug: data.slug,
+			$title: data.title,
 			$id: post.id
 		});
 		return rsp;

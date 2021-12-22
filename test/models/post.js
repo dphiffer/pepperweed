@@ -7,7 +7,8 @@ if (fs.existsSync(db_path)) {
 	fs.unlinkSync(db_path);
 }
 
-let Post = require('../src/models/post');
+let Queries = require('../../src/db/queries');
+let Post = require('../../src/models/post');
 
 tap.test('create post', async tap => {
 	let post = new Post({
@@ -23,9 +24,12 @@ tap.test('load post by id', async tap => {
 	await p1.load();
 	tap.equal(p1.data.title, 'Hello world');
 
-	let p2 = new Post(99);
-	await p2.load();
-	tap.equal(p2, null);
+	try {
+		let p2 = new Post(99);
+		await p2.load();
+	} catch (err) {
+		tap.equal(err instanceof Queries.NotFoundError, true);
+	}
 });
 
 tap.test('update post', async tap => {
@@ -53,5 +57,7 @@ tap.test('delete post', async tap => {
 });
 
 tap.teardown(tap => {
-	fs.unlinkSync(db_path);
+	if (fs.existsSync(db_path)) {
+		fs.unlinkSync(db_path);
+	}
 });
