@@ -10,13 +10,10 @@ class Post extends Base {
 		return query.map(data => new Post(data));
 	}
 
-	async load() {
-		if (this.id) {
-			let db = require('../db');
-			let data = await db.post.load(this.id);
-			Object.assign(this.data, data);
-		}
-		return this;
+	static async load(id) {
+		let db = require('../db');
+		let data = await db.post.load(id);
+		return new Post(data);
 	}
 
 	async save() {

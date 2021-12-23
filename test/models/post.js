@@ -1,7 +1,7 @@
 let tap = require('tap');
 let fs = require('fs');
 
-let db_path = './test.db';
+let db_path = './test-post.db';
 process.env.DB_PATH = db_path;
 if (fs.existsSync(db_path)) {
 	fs.unlinkSync(db_path);
@@ -20,26 +20,24 @@ tap.test('create post', async tap => {
 });
 
 tap.test('load post by id', async tap => {
-	let p1 = new Post(1);
-	await p1.load();
+	let p1 = await Post.load(1);
 	tap.equal(p1.data.title, 'Hello world');
 
 	try {
-		let p2 = new Post(99);
-		await p2.load();
+		let p2 = await Post.load(99);
 	} catch (err) {
 		tap.equal(err instanceof Queries.NotFoundError, true);
 	}
 });
 
 tap.test('update post', async tap => {
-	let p1 = new Post(1);
+	let p1 = await Post.load(1);
 	p1.data.slug = 'test';
 	await p1.save();
 
-	let p2 = new Post(1);
-	await p2.load();
+	let p2 = await Post.load(1);
 	tap.equal(p2.data.slug, 'test');
+	tap.equal(p2.data.title, 'Hello world');
 });
 
 tap.test('query posts', async tap => {
@@ -49,7 +47,7 @@ tap.test('query posts', async tap => {
 });
 
 tap.test('delete post', async tap => {
-	let post = new Post(1);
+	let post = await Post.load(1);
 	await post.remove();
 
 	let posts = await Post.query();

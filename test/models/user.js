@@ -1,7 +1,7 @@
 let tap = require('tap');
 let fs = require('fs');
 
-let db_path = './test.db';
+let db_path = './test-user.db';
 process.env.DB_PATH = db_path;
 if (fs.existsSync(db_path)) {
 	fs.unlinkSync(db_path);
