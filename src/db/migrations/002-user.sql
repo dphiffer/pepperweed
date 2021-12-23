@@ -2,10 +2,12 @@
 -- Up
 --------------------------------------------------------------------------------
 
-CREATE TABLE post (
+CREATE TABLE user (
 	id INTEGER PRIMARY KEY,
-	title TEXT,
 	slug TEXT UNIQUE,
+	name TEXT,
+	email TEXT UNIQUE,
+	password TEXT,
 	created TEXT,
 	updated TEXT
 );
@@ -14,4 +16,4 @@ CREATE TABLE post (
 -- Down
 --------------------------------------------------------------------------------
 
-DROP TABLE post;
+DROP TABLE user;

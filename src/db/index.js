@@ -28,5 +28,6 @@ const connect = async () => {
 
 module.exports = {
 	connect: connect,
-	post: require('./post')(connect)
+	post: require('./post')(connect),
+	user: require('./user')(connect)
 };

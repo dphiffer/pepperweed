@@ -44,7 +44,7 @@ class PostQueries extends Queries {
 	async update(post) {
 		let db = await this.connect();
 		let data = await this.load(post.id);
-		data = Object.assign(data, post.data);
+		Object.assign(data, post.data);
 		let rsp = await db.run(`
 			UPDATE post
 			SET slug = $slug,
@@ -63,10 +63,8 @@ class PostQueries extends Queries {
 		let db = await this.connect();
 		let rsp = await db.run(`
 			DELETE FROM post
-			WHERE id = $id
-		`, {
-			$id: post.id
-		});
+			WHERE id = ?
+		`, post.id);
 		return rsp;
 	}
 
