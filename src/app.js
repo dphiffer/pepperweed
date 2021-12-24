@@ -3,17 +3,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const fastify = require('fastify')({
-	logger: {
-		prettyPrint: {
-			translateTime: true,
-			ignore: 'pid,hostname,reqId,responseTime,req,res',
-			messageFormat: '{msg} {req.method} {req.url}'
-		}
-	},
-	ignoreTrailingSlash: true
-});
-
 if (! fs.existsSync(path.dirname(__dirname), 'conf/secrets.js')) {
 	console.log('+----------------------------------------------------------+');
 	console.log('|                                                          |');
@@ -23,27 +12,37 @@ if (! fs.existsSync(path.dirname(__dirname), 'conf/secrets.js')) {
 	console.log('+----------------------------------------------------------+');
 	process.exit(1);
 }
-const secrets = require('../conf/secrets');
 
-fastify.register(require('fastify-static'), {
-	root: path.join(path.dirname(__dirname), 'public')
-});
+let secrets = require('../conf/secrets');
 
-fastify.register(require('fastify-formbody'));
+function build(options = {}) {
+	let app = require('fastify')(options);
 
-fastify.register(require('point-of-view'), {
-	engine: {
-		ejs: require('ejs')
-	},
-	root: path.join(__dirname, 'views'),
-	layout: 'layout.ejs'
-});
+	app.register(require('./routes/index'));
+	app.register(require('./routes/auth'));
 
-fastify.register(require('fastify-secure-session'), {
-	key: Buffer.from(secrets.session_key, 'hex'),
-	cookie: {
-		path: '/'
-	}
-});
+	app.register(require('fastify-static'), {
+		root: path.join(path.dirname(__dirname), 'public')
+	});
 
-module.exports = fastify;
+	app.register(require('fastify-formbody'));
+
+	app.register(require('point-of-view'), {
+		engine: {
+			ejs: require('ejs')
+		},
+		root: path.join(__dirname, 'views'),
+		layout: 'layout.ejs'
+	});
+
+	app.register(require('fastify-secure-session'), {
+		key: Buffer.from(secrets.session_key, 'hex'),
+		cookie: {
+			path: '/'
+		}
+	});
+
+	return app;
+}
+
+module.exports = build;

@@ -1,20 +1,24 @@
 'use strict';
 
-const fastify = require('./app');
-
-fastify.register(require('./routes/index'));
-fastify.register(require('./routes/auth'));
-// fastify.register(require('./routes/data'));
-// fastify.register(require('./routes/api'));
+const server = require('./app')({
+	logger: {
+		prettyPrint: {
+			translateTime: true,
+			ignore: 'pid,hostname,reqId,responseTime,req,res',
+			messageFormat: '{msg} {req.method} {req.url}'
+		}
+	},
+	ignoreTrailingSlash: true
+});
 
 (async () => {
 	try {
-		await fastify.listen(
+		await server.listen(
 			process.env.PORT || 3000,
 			process.env.HOST || '0.0.0.0'
 		);
 	} catch (err) {
-		fastify.log.error(err);
+		server.log.error(err);
 		process.exit(1);
 	}
 })();

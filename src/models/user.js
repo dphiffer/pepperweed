@@ -20,12 +20,8 @@ class User extends Base {
 	static async current(req) {
 		let id = req.session.get('user');
 		if (id) {
-			try {
-				let user = await User.load(id);
-				return user;
-			} catch(err) {
-				return null;
-			}
+			let user = await User.load(id);
+			return user;
 		} else {
 			return null;
 		}

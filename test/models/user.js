@@ -1,14 +1,14 @@
-let tap = require('tap');
-let fs = require('fs');
+const tap = require('tap');
+const fs = require('fs');
 
-let db_path = './test-user.db';
+const db_path = './test-user.db';
 process.env.DB_PATH = db_path;
 if (fs.existsSync(db_path)) {
 	fs.unlinkSync(db_path);
 }
 
-let Queries = require('../../src/db/queries');
-let User = require('../../src/models/user');
+const Queries = require('../../src/db/queries');
+const User = require('../../src/models/user');
 
 tap.test('create user', async tap => {
 	let hash = await User.hashPassword('Hello world');
@@ -75,7 +75,7 @@ tap.test('user login', async tap => {
 
 tap.test('update user', async tap => {
 	let u1 = await User.load(1);
-	u1.slug = 'test2';
+	u1.data.slug = 'test2';
 	await u1.save();
 
 	let u2 = await User.load(1);

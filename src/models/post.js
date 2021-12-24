@@ -4,6 +4,22 @@ const Base = require('./base');
 
 class Post extends Base {
 
+	get slug() {
+		return this.data.slug;
+	}
+
+	get title() {
+		return this.data.title;
+	}
+
+	get created() {
+		return this.data.created;
+	}
+
+	get updated() {
+		return this.data.updated;
+	}
+
 	static async query(args = {}) {
 		let db = require('../db');
 		let query = await db.post.query(args);
