@@ -8,7 +8,18 @@
 		<link rel="icon" href="/img/pepperweed.png">
 	</head>
 	<body>
-		<%- body %>
+		<div class="page">
+			<header>
+				<nav>
+					<% if (user) { %>
+						<a href="/<%= user.slug %>"><%= user.name %></a>
+					<% } else { %>
+						<a href="/login">Log in</a> <a href="/signup">Sign up</a>
+					<% } %>
+				</nav>
+			</header>
+			<%- body %>
+		</div>
 	</body>
 	<script src="/main.js"></script>
 </html>

@@ -3,9 +3,14 @@
 module.exports = (fastify, opts, done) => {
 
 	fastify.get('/', async (req, reply) => {
-		let db = require('../db');
-		let posts = await db.post.query();
+		let Post = require('../models/post');
+		let posts = await Post.query();
+
+		let User = require('../models/user');
+		let user = await User.current(req);
+
 		return reply.view('index.ejs', {
+			user: user,
 			posts: posts
 		});
 	});

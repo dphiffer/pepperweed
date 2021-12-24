@@ -3,7 +3,7 @@
 const fastify = require('./app');
 
 fastify.register(require('./routes/index'));
-// fastify.register(require('./routes/auth'));
+fastify.register(require('./routes/auth'));
 // fastify.register(require('./routes/data'));
 // fastify.register(require('./routes/api'));
 

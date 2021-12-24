@@ -5,6 +5,32 @@ const Queries = require('../db/queries');
 
 class User extends Base {
 
+	get slug() {
+		return this.data.slug;
+	}
+
+	get name() {
+		return this.data.name;
+	}
+
+	get email() {
+		return this.data.email;
+	}
+
+	static async current(req) {
+		let id = req.session.get('user');
+		if (id) {
+			try {
+				let user = await User.load(id);
+				return user;
+			} catch(err) {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
 	static async query(args = {}) {
 		let db = require('../db');
 		let query = await db.user.query(args);
