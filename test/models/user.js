@@ -1,8 +1,8 @@
 const tap = require('tap');
 const fs = require('fs');
 
-const db_path = './test-user.db';
-process.env.DB_PATH = db_path;
+const db_path = './data/test-user.db';
+process.env.DATABASE = db_path;
 if (fs.existsSync(db_path)) {
 	fs.unlinkSync(db_path);
 }

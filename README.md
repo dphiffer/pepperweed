@@ -26,4 +26,5 @@ npm test
 
 * `PORT`: the port number to run the server, defaults to `3000`
 * `HOST`: the host to respond to, defaults to `0.0.0.0`
-* `DB_PATH`: path to the SQLite database, defaults to `./main.db`
+* `DATABASE`: path to the SQLite database, defaults to `./data/main.db`
+* `SECRETS`: path to the secrets file, defaults to `./conf/secrets.js`

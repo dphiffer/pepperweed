@@ -18,9 +18,6 @@ let secrets = require('../conf/secrets');
 function build(options = {}) {
 	let app = require('fastify')(options);
 
-	app.register(require('./routes/index'));
-	app.register(require('./routes/auth'));
-
 	app.register(require('fastify-static'), {
 		root: path.join(path.dirname(__dirname), 'public')
 	});
@@ -41,6 +38,9 @@ function build(options = {}) {
 			path: '/'
 		}
 	});
+
+	app.register(require('./routes/index'));
+	app.register(require('./routes/auth'));
 
 	return app;
 }
