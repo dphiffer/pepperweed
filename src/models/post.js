@@ -1,40 +1,56 @@
 'use strict';
 
-let dbname;
+const Base = require('./base');
 
-class Post {
+class Post extends Base {
 
-	id = null;
-	data = {};
-
-	constructor(data) {
-		if (data && typeof data != 'object') {
-			this.data = {
-				id: data
-			};
-		} else {
-			this.data = data || {};
-		}
-		this.id = this.data.id || null;
-		delete this.data.id;
+	get slug() {
+		return this.data.slug;
 	}
 
-	async load() {
-		if (this.id) {
-			let db = require('../db');
-			let data = await db.post.load(this.id);
-			Object.assign(this.data, data);
-		}
+	get title() {
+		return this.data.title;
+	}
+
+	get created() {
+		return this.data.created;
+	}
+
+	get updated() {
+		return this.data.updated;
+	}
+
+	static async query(args = {}) {
+		let db = require('../db');
+		let query = await db.post.query(args);
+		return query.map(data => new Post(data));
+	}
+
+	static async load(id) {
+		let db = require('../db');
+		let data = await db.post.load(id);
+		return new Post(data);
 	}
 
 	async save() {
 		let db = require('../db');
-		await db.post.save(this);
+		if (this.id) {
+			await db.post.update(this);
+			this.data = await db.post.load(this.id);
+		} else {
+			let rsp = await db.post.create(this);
+			this.id = rsp.lastID;
+		}
+		return this;
+	}
+
+	async remove() {
+		if (this.id) {
+			let db = require('../db');
+			await db.post.remove(this);
+		}
 	}
 
 }
 
-module.exports = async _dbname => {
-	//await Post.load_fields();
-	return Post;
-};
+module.exports = Post;

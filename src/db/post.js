@@ -1,27 +1,18 @@
 'use strict';
 
-class PostQueries {
+const Queries = require('./queries');
 
-	constructor(connect) {
-		this.connect = connect;
-	}
+class PostQueries extends Queries {
 
-	async query() {
+	async query(args = {}) {
 		let db = await this.connect();
-		let Post = await require('../models/post')();
-		let rsp = await db.all(`
-			SELECT id
+		let query = await db.all(`
+			SELECT *
 			FROM post
-			ORDER BY created
+			ORDER BY created DESC
 			LIMIT 10
 		`);
-		let posts = [];
-		for (let row of rsp) {
-			let post = new Post(row.id);
-			await post.load();
-			posts.push(post);
-		}
-		return posts;
+		return query;
 	}
 
 	async load(id) {
@@ -32,20 +23,9 @@ class PostQueries {
 			WHERE id = ?
 		`, id);
 		if (! data) {
-			return null;
+			throw new Queries.NotFoundError(`Post ${id} not found`);
 		}
 		return data;
-	}
-
-	async save(post) {
-		let rsp;
-		if (post.id) {
-			rsp = await this.update(post);
-		} else {
-			rsp = await this.create(post);
-			post.id = rsp.lastID;
-		}
-		return rsp;
 	}
 
 	async create(post) {
@@ -63,6 +43,8 @@ class PostQueries {
 
 	async update(post) {
 		let db = await this.connect();
+		let data = await this.load(post.id);
+		Object.assign(data, post.data);
 		let rsp = await db.run(`
 			UPDATE post
 			SET slug = $slug,
@@ -70,8 +52,8 @@ class PostQueries {
 			    updated = CURRENT_TIMESTAMP
 			WHERE id = $id
 		`, {
-			$slug: post.data.slug,
-			$title: post.data.title,
+			$slug: data.slug,
+			$title: data.title,
 			$id: post.id
 		});
 		return rsp;
@@ -81,10 +63,8 @@ class PostQueries {
 		let db = await this.connect();
 		let rsp = await db.run(`
 			DELETE FROM post
-			WHERE id = $id
-		`, {
-			$id: post.id
-		});
+			WHERE id = ?
+		`, post.id);
 		return rsp;
 	}
 
