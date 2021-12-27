@@ -1,6 +1,6 @@
 {
   "name": "pepperweed",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "perrenial media archive",
   "main": "src/server.js",
   "scripts": {
