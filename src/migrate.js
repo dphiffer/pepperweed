@@ -15,5 +15,6 @@ const path = require('path');
 		ORDER BY id DESC
 		LIMIT 1
 	`);
-	console.log(`Migrated database to ${result.id}-${result.name}`);
+	let prefix = String(result.id).padStart(3, '0');
+	console.log(`Migrated database to ${prefix}-${result.name}.sql`);
 })();
