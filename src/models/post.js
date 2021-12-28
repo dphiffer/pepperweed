@@ -45,10 +45,8 @@ class Post extends Base {
 	}
 
 	async remove() {
-		if (this.id) {
-			let db = require('../db');
-			await db.post.remove(this);
-		}
+		let db = require('../db');
+		await db.post.remove(this);
 	}
 
 }

@@ -13,7 +13,7 @@ class OptionQueries extends Queries {
 		return rsp;
 	}
 
-	async load(key = null) {
+	async load(key, defaultValue = null) {
 		let db = await this.connect();
 		let rsp = await db.get(`
 			SELECT value
@@ -21,7 +21,7 @@ class OptionQueries extends Queries {
 			WHERE key = ?
 		`, key);
 		if (! rsp) {
-			return null;
+			return defaultValue;
 		}
 		return rsp.value;
 	}
@@ -49,6 +49,14 @@ class OptionQueries extends Queries {
 			$key: key,
 			$value: value
 		});
+	}
+
+	async remove(key) {
+		let db = await this.connect();
+		await db.run(`
+			DELETE FROM option
+			WHERE key = ?
+		`, key);
 	}
 
 }

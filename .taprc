@@ -1,0 +1,3 @@
+ test-env: DATABASE=./data/test.db
+ before: test/setup.js
+ after: test/teardown.js

@@ -1,12 +1,7 @@
+'use strict';
+
 const tap = require('tap');
 const fs = require('fs');
-
-const db_path = './data/test-user.db';
-process.env.DATABASE = db_path;
-if (fs.existsSync(db_path)) {
-	fs.unlinkSync(db_path);
-}
-
 const Queries = require('../../src/db/queries');
 const User = require('../../src/models/user');
 
@@ -64,6 +59,14 @@ tap.test('load user by email', async tap => {
 	}
 });
 
+tap.test('pass undefined to user load', async tap => {
+	try {
+		let user = await User.load();
+	} catch (err) {
+		tap.equal(err instanceof Queries.NotFoundError, true);
+	}
+});
+
 tap.test('user login', async tap => {
 	let user = await User.load('test@test.test');
 	let r1 = await user.checkPassword('Hello world');
@@ -94,10 +97,4 @@ tap.test('delete user', async tap => {
 
 	let users = await User.query();
 	tap.equal(users.length, 0);
-});
-
-tap.teardown(tap => {
-	if (fs.existsSync(db_path)) {
-		fs.unlinkSync(db_path);
-	}
 });

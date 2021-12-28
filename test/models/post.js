@@ -1,12 +1,6 @@
+'use strict';
+
 const tap = require('tap');
-const fs = require('fs');
-
-const db_path = './data/test-post.db';
-process.env.DATABASE = db_path;
-if (fs.existsSync(db_path)) {
-	fs.unlinkSync(db_path);
-}
-
 const Queries = require('../../src/db/queries');
 const Post = require('../../src/models/post');
 
@@ -56,10 +50,4 @@ tap.test('delete post', async tap => {
 
 	let posts = await Post.query();
 	tap.equal(posts.length, 0);
-});
-
-tap.teardown(tap => {
-	if (fs.existsSync(db_path)) {
-		fs.unlinkSync(db_path);
-	}
 });

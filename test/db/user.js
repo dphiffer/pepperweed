@@ -1,6 +1,7 @@
-let tap = require('tap');
+'use strict';
 
-let Queries = require('../../src/db/queries');
+const tap = require('tap');
+const Queries = require('../../src/db/queries');
 
 tap.test('load user by invalid key', async tap => {
 	let db = require('../../src/db');

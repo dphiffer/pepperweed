@@ -4,7 +4,7 @@ const Queries = require('./queries');
 
 class UserQueries extends Queries {
 
-	async query(args = {}) {
+	async query() {
 		let db = await this.connect();
 		let query = await db.all(`
 			SELECT *

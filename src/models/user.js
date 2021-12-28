@@ -82,10 +82,8 @@ class User extends Base {
 	}
 
 	async remove() {
-		if (this.id) {
-			let db = require('../db');
-			await db.user.remove(this);
-		}
+		let db = require('../db');
+		await db.user.remove(this);
 	}
 
 }

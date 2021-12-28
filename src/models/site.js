@@ -18,7 +18,7 @@ class Site {
 
 	async setOption(key, value) {
 		let db = require('../db');
-		let exists = await db.option.load(key);
+		let exists = await db.option.load(key, null);
 		if (! exists) {
 			await db.option.create(key, value);
 		} else {
@@ -27,16 +27,22 @@ class Site {
 		this.options[key] = value;
 	}
 
-	async getOption(key, defaultValue = null) {
+	async getOption(key) {
 		let db = require('../db');
-		if (key in this.options) {
+		if (typeof this.options[key] != 'undefined') {
 			return this.options[key];
 		}
 		let value = await db.option.load(key);
-		if (value != null) {
-			return value;
+		this.options[key] = value;
+		return value;
+	}
+
+	async removeOption(key) {
+		let db = require('../db');
+		if (typeof this.options[key] != 'undefined') {
+			delete this.options[key];
 		}
-		return defaultValue;
+		await db.option.remove(key);
 	}
 }
 

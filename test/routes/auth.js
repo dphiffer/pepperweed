@@ -1,12 +1,8 @@
+'use strict';
+
 const tap = require('tap');
 const fs = require('fs');
 const build = require('../../src/app');
-
-const db_path = './data/test-auth.db';
-process.env.DATABASE = db_path;
-if (fs.existsSync(db_path)) {
-	fs.unlinkSync(db_path);
-}
 
 const User = require('../../src/models/user');
 var cookies = null;
@@ -133,10 +129,4 @@ tap.test('user logs in', async tap => {
 	cookies = rsp.cookies;
 	tap.match(rsp.statusCode, 302);
 	tap.match(rsp.cookies[0].name, 'session');
-});
-
-tap.teardown(tap => {
-	if (fs.existsSync(db_path)) {
-		fs.unlinkSync(db_path);
-	}
 });
