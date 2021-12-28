@@ -2,6 +2,9 @@
 
 (async () => {
 	try {
+		if (! process.env.DATABASE) {
+			process.env.DATABASE = './data/main.db';
+		}
 		const server = await require('./app')({
 			logger: {
 				prettyPrint: {
