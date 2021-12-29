@@ -1,11 +1,10 @@
 'use strict';
 
-let User = require('../models/user');
+const User = require('../models/user');
 
 module.exports = (fastify, opts, done) => {
 
 	fastify.get('/signup', async (req, reply) => {
-		let User = require('../models/user');
 		let user = await User.current(req);
 		if (user) {
 			return reply.redirect('/');
@@ -16,14 +15,12 @@ module.exports = (fastify, opts, done) => {
 	});
 
 	fastify.post('/signup', async (req, reply) => {
-		let password = await User.hashPassword(req.body.password);
-		let user = new User({
+		let user = await User.create({
 			slug: req.body.slug,
 			name: req.body.name,
 			email: req.body.email,
-			password: password
+			password: req.body.password
 		});
-		await user.save();
 		req.session.set('user', user.id);
 		return reply.redirect('/');
 	});

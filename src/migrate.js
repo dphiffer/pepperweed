@@ -1,5 +1,8 @@
 'use strict';
 
+if (! process.env.DATABASE) {
+	process.env.DATABASE = './data/main.db';
+}
 const path = require('path');
 
 (async () => {

@@ -20,7 +20,7 @@
 			process.env.HOST || '0.0.0.0'
 		);
 	} catch (err) {
-		server.log.error(err);
+		console.error(err);
 		process.exit(1);
 	}
 })();

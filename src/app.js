@@ -33,6 +33,7 @@ async function build(options = {}) {
 
 	app.register(require('./routes/index'));
 	app.register(require('./routes/auth'));
+	app.register(require('./routes/post'));
 
 	return app;
 }

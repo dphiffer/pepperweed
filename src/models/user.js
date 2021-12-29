@@ -17,6 +17,15 @@ class User extends Base {
 		return this.data.email;
 	}
 
+	static async create(data) {
+		let db = require('../db');
+		let bcrypt = require('bcrypt');
+		let saltRounds = 10;
+		data.password = await bcrypt.hash(data.password, saltRounds);
+		data.id = await db.user.create(data);
+		return new User(data);
+	}
+
 	static async current(req) {
 		let id = req.session.get('user');
 		if (id) {
@@ -27,24 +36,15 @@ class User extends Base {
 		}
 	}
 
-	static async query(args = {}) {
-		let db = require('../db');
-		let query = await db.user.query(args);
-		return query.map(data => new User(data));
-	}
-
 	static async load(id) {
 		let db = require('../db');
 		let data = null;
-		let idRegex = /^\d+$/;
 		let emailRegex = /^\w+@\w+\.\w+$/;
 		let slugRegex = /^[a-z0-9_-]+$/i;
-		if (typeof id == "number") {
+		if (typeof id == 'number') {
 			data = await db.user.load('id', id);
-		} else if (typeof id == "string") {
-			if (id.match(idRegex)) {
-				data = await db.user.load('id', parseInt(id));
-			} else if (id.match(emailRegex)) {
+		} else if (typeof id == 'string') {
+			if (id.match(emailRegex)) {
 				data = await db.user.load('email', id);
 			} else if (id.match(slugRegex)) {
 				data = await db.user.load('slug', id);
@@ -56,22 +56,10 @@ class User extends Base {
 		return new User(data);
 	}
 
-	static async hashPassword(plainText) {
-		let bcrypt = require('bcrypt');
-		let saltRounds = 10;
-		let hash = await bcrypt.hash(plainText, saltRounds);
-		return hash;
-	}
-
 	async save() {
 		let db = require('../db');
-		if (this.id) {
-			await db.user.update(this);
-			this.data = await db.user.load('id', this.id);
-		} else {
-			let rsp = await db.user.create(this);
-			this.id = rsp.lastID;
-		}
+		await db.user.update(this);
+		this.data = await db.user.load('id', this.id);
 		return this;
 	}
 

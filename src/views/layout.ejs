@@ -12,9 +12,11 @@
 			<header>
 				<nav>
 					<% if (user) { %>
+						<a href="/new">New Post</a> /
 						<a href="/<%= user.slug %>"><%= user.name %></a>
 					<% } else { %>
-						<a href="/login">Log in</a> <a href="/signup">Sign up</a>
+						<a href="/login">Log in</a> /
+						<a href="/signup">Sign up</a>
 					<% } %>
 				</nav>
 			</header>

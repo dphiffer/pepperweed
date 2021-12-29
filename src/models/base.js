@@ -6,10 +6,8 @@ class Base {
 	data = {};
 
 	constructor(init) {
-		if (init.id) {
-			this.id = init.id;
-			delete init.id;
-		}
+		this.id = init.id;
+		delete init.id;
 		this.data = init;
 	}
 }

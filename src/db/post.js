@@ -28,17 +28,18 @@ class PostQueries extends Queries {
 		return data;
 	}
 
-	async create(post) {
+	async create(user, slug) {
 		let db = await this.connect();
 		let rsp = await db.run(`
 			INSERT INTO post
-			(slug, title, created, updated)
-			VALUES ($slug, $title, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+			(user_id, slug, created, updated)
+			VALUES ($user_id, $slug, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 		`, {
-			$slug: post.data.slug,
-			$title: post.data.title
+			$user_id: user.id,
+			$slug: slug
 		});
-		return rsp;
+		let post = await this.load(rsp.lastID);
+		return post;
 	}
 
 	async update(post) {

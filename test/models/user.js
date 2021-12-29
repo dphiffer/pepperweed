@@ -5,27 +5,22 @@ const fs = require('fs');
 const Queries = require('../../src/db/queries');
 const User = require('../../src/models/user');
 
-tap.test('create user', async tap => {
-	let hash = await User.hashPassword('Hello world');
-	let user = new User({
+tap.test('create user, load by id', async tap => {
+	let u1 = await User.create({
 		name: 'Test',
 		slug: 'test',
 		email: 'test@test.test',
-		password: hash
+		password: 'Hello world'
 	});
-	await user.save();
-	tap.equal(user.id, 1);
+	tap.equal(typeof u1.id, 'number');
+
+	let u2 = await User.load(u1.id);
+	tap.equal(u2.email, 'test@test.test');
 });
 
-tap.test('load user by id', async tap => {
-	let u1 = await User.load(1);
-	tap.equal(u1.email, 'test@test.test');
-
-	let u2 = await User.load('1');
-	tap.equal(u1.slug, 'test');
-
+tap.test('load user by non-existant id', async tap => {
 	try {
-		let u3 = await User.load(99);
+		let user = await User.load(99);
 	} catch (err) {
 		tap.equal(err instanceof Queries.NotFoundError, true);
 	}
@@ -77,24 +72,21 @@ tap.test('user login', async tap => {
 });
 
 tap.test('update user', async tap => {
-	let u1 = await User.load(1);
+	let u1 = await User.load('test@test.test');
 	u1.data.slug = 'test2';
 	await u1.save();
 
-	let u2 = await User.load(1);
+	let u2 = await User.load('test@test.test');
 	tap.equal(u2.slug, 'test2');
 });
 
-tap.test('query users', async tap => {
-	let users = await User.query();
-	tap.equal(users.length, 1);
-	tap.equal(users[0].slug, 'test2');
-});
-
 tap.test('delete user', async tap => {
-	let user = await User.load(1);
-	await user.remove();
+	let u1 = await User.load('test@test.test');
+	await u1.remove();
 
-	let users = await User.query();
-	tap.equal(users.length, 0);
+	try {
+		let u2 = await User.load('test@test.test');
+	} catch (err) {
+		tap.equal(err instanceof Queries.NotFoundError, true);
+	}
 });
