@@ -1,6 +1,6 @@
 # pepperweed
 
-Perrenial media archive
+Perennial media archive
 
 ## Dependencies
 

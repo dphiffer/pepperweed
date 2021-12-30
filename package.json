@@ -1,7 +1,7 @@
 {
   "name": "pepperweed",
-  "version": "0.0.4",
-  "description": "perrenial media archive",
+  "version": "0.0.5",
+  "description": "Perennial media archive",
   "main": "src/server.js",
   "scripts": {
     "setup": "node src/setup.js",
