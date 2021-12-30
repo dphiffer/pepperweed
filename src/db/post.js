@@ -15,15 +15,19 @@ class PostQueries extends Queries {
 		return query;
 	}
 
-	async load(id) {
+	async load(key, value) {
+		let validKeys = ['id', 'slug'];
+		if (validKeys.indexOf(key) == -1) {
+			throw new Queries.InvalidInputError(`Cannot load post by '${key}'`);
+		}
 		let db = await this.connect();
 		let data = await db.get(`
 			SELECT *
 			FROM post
-			WHERE id = ?
-		`, id);
+			WHERE ${key} = ?
+		`, value);
 		if (! data) {
-			throw new Queries.NotFoundError(`Post ${id} not found`);
+			throw new Queries.NotFoundError(`Post ${key} '${value}' not found`);
 		}
 		return data;
 	}
@@ -38,13 +42,13 @@ class PostQueries extends Queries {
 			$user_id: user.id,
 			$slug: slug
 		});
-		let post = await this.load(rsp.lastID);
+		let post = await this.load('id', rsp.lastID);
 		return post;
 	}
 
 	async update(post) {
 		let db = await this.connect();
-		let data = await this.load(post.id);
+		let data = await this.load('id', post.id);
 		Object.assign(data, post.data);
 		let rsp = await db.run(`
 			UPDATE post

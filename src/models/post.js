@@ -27,13 +27,18 @@ class Post extends Base {
 	}
 
 	get editUrl() {
-		return `/edit/${this.slug}`;
+		return `/edit/${this.id}`;
 	}
 
 	static async query(args = {}) {
 		let db = require('../db');
 		let query = await db.post.query(args);
-		return query.map(data => new Post(data));
+		let posts = [];
+		for (let data of query) {
+			let post = await Post.init(data);
+			posts.push(post);
+		}
+		return posts;
 	}
 
 	static async create(user) {
@@ -46,7 +51,12 @@ class Post extends Base {
 
 	static async load(id) {
 		let db = require('../db');
-		let data = await db.post.load(id);
+		let data = {};
+		if (typeof id == 'number') {
+			data = await db.post.load('id', id);
+		} else {
+			data = await db.post.load('slug', id);
+		}
 		let post = await Post.init(data);
 		return post;
 	}
@@ -60,7 +70,7 @@ class Post extends Base {
 	async save() {
 		let db = require('../db');
 		await db.post.update(this);
-		this.data = await db.post.load(this.id);
+		this.data = await db.post.load('id', this.id);
 		return this;
 	}
 

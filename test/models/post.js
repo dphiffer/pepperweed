@@ -19,7 +19,7 @@ tap.test('create user and post', async tap => {
 	// Default URLs should be assigned
 	let hashLength = 40;
 	tap.equal(post.url.length, '/pmaker/'.length + hashLength);
-	tap.equal(post.editUrl.length, '/edit/'.length + hashLength);
+	tap.match(post, {editUrl: /^\/edit\/\d+$/});
 });
 
 tap.test('load post by id', async tap => {
@@ -45,6 +45,17 @@ tap.test('update post', async tap => {
 	let p2 = await Post.load(1);
 	tap.equal(p2.title, 'Testing');
 	tap.equal(p2.slug, 'test');
+});
+
+tap.test('load post by slug', async tap => {
+	let p1 = await Post.load('test');
+	tap.equal(p1.id, 1);
+
+	try {
+		let p2 = await Post.load('non-existant');
+	} catch (err) {
+		tap.equal(err instanceof Queries.NotFoundError, true);
+	}
 });
 
 tap.test('query posts', async tap => {

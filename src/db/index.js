@@ -22,6 +22,7 @@ const connect = async () => {
 		await db.migrate({
 			migrationsPath: path.join(__dirname, 'migrations')
 		});
+		exists = true;
 	}
 	return db;
 };

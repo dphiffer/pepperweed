@@ -2,9 +2,13 @@
 
 const fs = require('fs');
 const path = require('path');
+var app = null;
 
 async function build(options = {}) {
-	let app = require('fastify')(options);
+	if (app) {
+		return app;
+	}
+	app = require('fastify')(options);
 
 	app.register(require('fastify-static'), {
 		root: path.join(path.dirname(__dirname), 'public')
