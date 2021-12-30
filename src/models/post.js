@@ -1,6 +1,8 @@
 'use strict';
 
+const crypto = require('crypto');
 const Base = require('./base');
+const User = require('./user');
 
 class Post extends Base {
 
@@ -20,35 +22,61 @@ class Post extends Base {
 		return this.data.updated;
 	}
 
+	get url() {
+		return `/${this.user.slug}/${this.slug}`;
+	}
+
+	get editUrl() {
+		return `/edit/${this.id}`;
+	}
+
 	static async query(args = {}) {
 		let db = require('../db');
 		let query = await db.post.query(args);
-		return query.map(data => new Post(data));
+		let posts = [];
+		for (let data of query) {
+			let post = await Post.init(data);
+			posts.push(post);
+		}
+		return posts;
+	}
+
+	static async create(user) {
+		let db = require('../db');
+		let slug = crypto.randomBytes(20).toString('hex');
+		let data = await db.post.create(user, slug);
+		let post = await Post.init(data);
+		return post;
 	}
 
 	static async load(id) {
 		let db = require('../db');
-		let data = await db.post.load(id);
-		return new Post(data);
+		let data = {};
+		if (typeof id == 'number') {
+			data = await db.post.load('id', id);
+		} else {
+			data = await db.post.load('slug', id);
+		}
+		let post = await Post.init(data);
+		return post;
+	}
+
+	static async init(data) {
+		let post = new Post(data);
+		post.user = await User.load(data.user_id);
+		return post;
 	}
 
 	async save() {
 		let db = require('../db');
-		if (this.id) {
-			await db.post.update(this);
-			this.data = await db.post.load(this.id);
-		} else {
-			let rsp = await db.post.create(this);
-			this.id = rsp.lastID;
-		}
+		await db.post.update(this);
+		this.data = await db.post.load('id', this.id);
 		return this;
 	}
 
 	async remove() {
-		if (this.id) {
-			let db = require('../db');
-			await db.post.remove(this);
-		}
+		let db = require('../db');
+		await db.post.remove(this);
 	}
 
 }

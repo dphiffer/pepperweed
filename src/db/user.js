@@ -4,17 +4,6 @@ const Queries = require('./queries');
 
 class UserQueries extends Queries {
 
-	async query(args = {}) {
-		let db = await this.connect();
-		let query = await db.all(`
-			SELECT *
-			FROM user
-			ORDER BY created DESC
-			LIMIT 10
-		`);
-		return query;
-	}
-
 	async load(key, value) {
 		let validKeys = ['id', 'email', 'slug'];
 		if (validKeys.indexOf(key) == -1) {
@@ -32,19 +21,19 @@ class UserQueries extends Queries {
 		return data;
 	}
 
-	async create(user) {
+	async create(data) {
 		let db = await this.connect();
 		let rsp = await db.run(`
 			INSERT INTO user
 			(slug, name, email, password, created, updated)
 			VALUES ($slug, $name, $email, $password, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 		`, {
-			$slug: user.data.slug,
-			$name: user.data.name,
-			$email: user.data.email,
-			$password: user.data.password
+			$slug: data.slug,
+			$name: data.name,
+			$email: data.email,
+			$password: data.password
 		});
-		return rsp;
+		return rsp.lastID;
 	}
 
 	async update(user) {
@@ -61,7 +50,9 @@ class UserQueries extends Queries {
 			WHERE id = $id
 		`, {
 			$slug: data.slug,
-			$title: data.title,
+			$name: data.name,
+			$email: data.email,
+			$password: data.password,
 			$id: user.id
 		});
 		return rsp;

@@ -4,7 +4,7 @@ const Queries = require('./queries');
 
 class PostQueries extends Queries {
 
-	async query(args = {}) {
+	async query() {
 		let db = await this.connect();
 		let query = await db.all(`
 			SELECT *
@@ -15,35 +15,40 @@ class PostQueries extends Queries {
 		return query;
 	}
 
-	async load(id) {
+	async load(key, value) {
+		let validKeys = ['id', 'slug'];
+		if (validKeys.indexOf(key) == -1) {
+			throw new Queries.InvalidInputError(`Cannot load post by '${key}'`);
+		}
 		let db = await this.connect();
 		let data = await db.get(`
 			SELECT *
 			FROM post
-			WHERE id = ?
-		`, id);
+			WHERE ${key} = ?
+		`, value);
 		if (! data) {
-			throw new Queries.NotFoundError(`Post ${id} not found`);
+			throw new Queries.NotFoundError(`Post ${key} '${value}' not found`);
 		}
 		return data;
 	}
 
-	async create(post) {
+	async create(user, slug) {
 		let db = await this.connect();
 		let rsp = await db.run(`
 			INSERT INTO post
-			(slug, title, created, updated)
-			VALUES ($slug, $title, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+			(user_id, slug, created, updated)
+			VALUES ($user_id, $slug, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 		`, {
-			$slug: post.data.slug,
-			$title: post.data.title
+			$user_id: user.id,
+			$slug: slug
 		});
-		return rsp;
+		let post = await this.load('id', rsp.lastID);
+		return post;
 	}
 
 	async update(post) {
 		let db = await this.connect();
-		let data = await this.load(post.id);
+		let data = await this.load('id', post.id);
 		Object.assign(data, post.data);
 		let rsp = await db.run(`
 			UPDATE post

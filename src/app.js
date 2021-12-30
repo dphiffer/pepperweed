@@ -2,21 +2,13 @@
 
 const fs = require('fs');
 const path = require('path');
+var app = null;
 
-if (! fs.existsSync(path.dirname(__dirname), 'conf/secrets.js')) {
-	console.log('+----------------------------------------------------------+');
-	console.log('|                                                          |');
-	console.log('|  conf/secrets.js not found.                              |');
-	console.log('|  Please run `npm run setup`                              |');
-	console.log('|                                                          |');
-	console.log('+----------------------------------------------------------+');
-	process.exit(1);
-}
-
-let secrets = require('../conf/secrets');
-
-function build(options = {}) {
-	let app = require('fastify')(options);
+async function build(options = {}) {
+	if (app) {
+		return app;
+	}
+	app = require('fastify')(options);
 
 	app.register(require('fastify-static'), {
 		root: path.join(path.dirname(__dirname), 'public')
@@ -32,8 +24,12 @@ function build(options = {}) {
 		layout: 'layout.ejs'
 	});
 
+	app.site = require('./models/site');
+	await app.site.setup();
+
+	let sessionKey = await app.site.getOption('sessionKey');
 	app.register(require('fastify-secure-session'), {
-		key: Buffer.from(secrets.session_key, 'hex'),
+		key: Buffer.from(sessionKey, 'hex'),
 		cookie: {
 			path: '/'
 		}
@@ -41,6 +37,7 @@ function build(options = {}) {
 
 	app.register(require('./routes/index'));
 	app.register(require('./routes/auth'));
+	app.register(require('./routes/post'));
 
 	return app;
 }
