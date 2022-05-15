@@ -10,11 +10,11 @@ async function build(options = {}) {
 	}
 	app = require('fastify')(options);
 
-	app.register(require('fastify-static'), {
+	app.register(require('@fastify/static'), {
 		root: path.join(path.dirname(__dirname), 'public')
 	});
 
-	app.register(require('fastify-formbody'));
+	app.register(require('@fastify/formbody'));
 
 	app.register(require('point-of-view'), {
 		engine: {
@@ -28,7 +28,7 @@ async function build(options = {}) {
 	await app.site.setup();
 
 	let sessionKey = await app.site.getOption('sessionKey');
-	app.register(require('fastify-secure-session'), {
+	app.register(require('@fastify/secure-session'), {
 		key: Buffer.from(sessionKey, 'hex'),
 		cookie: {
 			path: '/'

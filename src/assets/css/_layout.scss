@@ -1,0 +1,29 @@
+@use "variables" as *;
+
+body {
+	color: $c-dark;
+	font: 16px/20px $f-system;
+}
+
+.header {
+	position: relative;
+	padding: 15px 0;
+
+	.header__title {
+		font-size: 18px;
+		margin-left: 15px;
+
+		a {
+			color: $c-dark;
+
+			&:hover {
+				color: $c-blue;
+			}
+		}
+	}
+
+	.header__nav {
+		position: absolute;
+		right: 15px;
+	}
+}

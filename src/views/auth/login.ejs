@@ -1,0 +1,22 @@
+<div class="login">
+	<form action="/auth/login" method="post" class="login__form">
+		<label>
+			Username
+			<input type="text" name="username">
+		</label>
+		<label>
+			Password
+			<input type="password" name="password">
+		</label>
+		<% if (response) { %>
+			<div class="login__response">
+				<%= response %>
+			</div>
+		<% } %>
+		<input type="submit" value="Login">
+	</form>
+	<div class="login__options">
+		<a href="/auth/password_reset">Forget your password?</a>
+		<a href="/auth/signup">Sign up for an account</a>
+	</div>
+</div>

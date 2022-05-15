@@ -9,17 +9,11 @@
 	</head>
 	<body>
 		<div class="page">
-			<header>
-				<nav>
-					<% if (user) { %>
-						<a href="/new">New Post</a> /
-						<a href="/<%= user.slug %>"><%= user.name %></a>
-					<% } else { %>
-						<a href="/login">Log in</a> /
-						<a href="/signup">Sign up</a>
-					<% } %>
-				</nav>
-			</header>
+			<% if (header) { %>
+				<header class="header">
+					<h1 class="header__title"><a href="/">Dan Phiffer</a></h1>
+				</header>
+			<% } %>
 			<%- body %>
 		</div>
 	</body>

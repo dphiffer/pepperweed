@@ -16,7 +16,8 @@ module.exports = (fastify, opts, done) => {
 		let post = await Post.load(parseInt(req.params.id));
 		return reply.view('edit.ejs', {
 			user: user,
-			post: post
+			post: post,
+			header: false
 		});
 	});
 
@@ -32,7 +33,8 @@ module.exports = (fastify, opts, done) => {
 		let post = await Post.load(req.params.post);
 		return reply.view('post.ejs', {
 			user: user,
-			post: post
+			post: post,
+			header: true
 		});
 	});
 

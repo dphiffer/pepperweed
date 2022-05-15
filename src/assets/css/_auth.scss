@@ -1,0 +1,88 @@
+@use "variables" as *;
+
+.auth {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 57px;
+	height: 57px;
+	overflow: hidden;
+	z-index: 100;
+
+	.auth__bg {
+		position: absolute;
+		top: -40px;
+		right: -40px;
+		width: 80px;
+		height: 80px;
+		background: $c-light;
+		transform: rotate(45deg);
+		cursor: pointer;
+		transition: all 0.3s ease-out;
+
+		&:hover {
+			background: $c-dark;
+		}
+	}
+}
+
+.auth__close {
+	display: none;
+}
+
+.auth__iframe {
+	display: none;
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.3s ease-out;
+
+	&.auth--visible {
+		visibility: visible;
+		opacity: 1;
+	}
+}
+
+.auth--open {
+	overflow: visible;
+
+	.auth__bg {
+		position: fixed;
+		right: 0;
+		top: 0;
+		width: 100vw;
+		height: 100vh;
+		background: $c-dark;
+		transform: rotate(0);
+		cursor: auto;
+	}
+
+	.auth__close {
+		display: block;
+		position: fixed;
+		top: 10px;
+		right: 10px;
+		width: 30px;
+		height: 30px;
+		color: #fff;
+		font: 30px/30px $f-sans;
+		cursor: pointer;
+		border-radius: 15px;
+		text-align: center;
+		z-index: 101;
+
+		&:hover {
+			color: $c-dark;
+			background: $c-light;
+		}
+	}
+
+	.auth__iframe {
+		display: block;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		z-index: 100;
+	}
+}

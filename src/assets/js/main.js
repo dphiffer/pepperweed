@@ -1,3 +1,5 @@
 'use strict';
 
-console.log('hi');
+import Auth from './modules/Auth';
+
+new Auth();
