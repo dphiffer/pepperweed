@@ -4,7 +4,7 @@ const User = require('../models/user');
 
 module.exports = (fastify, opts, done) => {
 
-	fastify.get('/auth/signup', async (req, reply) => {
+	fastify.get('/signup', async (req, reply) => {
 		let user = await User.current(req);
 		if (user) {
 			return reply.redirect('/');
@@ -15,7 +15,7 @@ module.exports = (fastify, opts, done) => {
 		});
 	});
 
-	fastify.post('/auth/signup', async (req, reply) => {
+	fastify.post('/signup', async (req, reply) => {
 		let user = await User.create({
 			slug: req.body.slug,
 			name: req.body.name,
@@ -26,7 +26,7 @@ module.exports = (fastify, opts, done) => {
 		return reply.redirect('/');
 	});
 
-	fastify.get('/auth/login', async (req, reply) => {
+	fastify.get('/login', async (req, reply) => {
 		let User = require('../models/user');
 		let user = await User.current(req);
 		if (user) {
@@ -39,7 +39,7 @@ module.exports = (fastify, opts, done) => {
 		});
 	});
 
-	fastify.post('/auth/login', async (req, reply) => {
+	fastify.post('/login', async (req, reply) => {
 		let user = await User.load(req.body.email);
 		let valid = await user.checkPassword(req.body.password);
 		if (valid) {
