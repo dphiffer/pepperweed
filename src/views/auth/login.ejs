@@ -1,12 +1,13 @@
 <div class="login">
 	<form action="/login" method="post" class="login__form">
+		<h2>Login to your account</h2>
 		<label>
-			Username
-			<input type="text" name="username">
+			Email address
+			<input type="text" name="email" value="<%= values.email %>">
 		</label>
 		<label>
 			Password
-			<input type="password" name="password">
+			<input type="password" name="password" value="<%= values.password %>">
 		</label>
 		<% if (response) { %>
 			<div class="login__response">
@@ -17,6 +18,6 @@
 	</form>
 	<div class="login__options">
 		<a href="/password_reset">Forget your password?</a>
-		<a href="/signup">Sign up for an account</a>
+		<a href="/signup">Sign up for a new account</a>
 	</div>
 </div>

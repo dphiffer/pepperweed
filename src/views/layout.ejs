@@ -9,13 +9,22 @@
 	</head>
 	<body>
 		<div class="page">
-			<% if (header) { %>
-				<header class="header">
-					<h1 class="header__title"><a href="/">Dan Phiffer</a></h1>
-				</header>
-			<% } %>
+			<header class="header">
+				<h1 class="header__title"><a href="/">Dan Phiffer</a></h1>
+				<% if (user) { %>
+					<div class="header__nav">
+						<a href="/@<%= user.slug %>"><%= user.name %></a>
+						<a href="/logout">Logout</a>
+					</div>
+				<% } else { %>
+					<div class="header__nav">
+						<a href="/signup">Sign up</a>
+						<a href="/login">Login</a>
+					</div>
+				<% } %>
+			</header>
 			<%- body %>
 		</div>
+		<script src="/main.js"></script>
 	</body>
-	<script src="/main.js"></script>
 </html>

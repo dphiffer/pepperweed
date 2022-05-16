@@ -11,19 +11,36 @@ module.exports = (fastify, opts, done) => {
 		}
 		return reply.view('auth/signup.ejs', {
 			user: false,
-			header: false
+			response: false,
+			values: {}
 		});
 	});
 
 	fastify.post('/signup', async (req, reply) => {
-		let user = await User.create({
-			slug: req.body.slug,
-			name: req.body.name,
-			email: req.body.email,
-			password: req.body.password
-		});
-		req.session.set('user', user.id);
-		return reply.redirect('/');
+		try {
+			let user = await User.create({
+				slug: req.body.slug,
+				name: req.body.name,
+				email: req.body.email,
+				password: req.body.password
+			})
+			if (user) {
+				req.session.set('user', user.id);
+				return reply.redirect('/');
+			} else {
+				return reply.view('auth/signup.ejs', {
+					user: false,
+					response: 'Sorry your account could not be created.',
+					values: req.body
+				});
+			}
+		} catch (err) {
+			return reply.view('auth/signup.ejs', {
+				user: false,
+				response: err.message,
+				values: req.body
+			});
+		}
 	});
 
 	fastify.get('/login', async (req, reply) => {
@@ -35,27 +52,29 @@ module.exports = (fastify, opts, done) => {
 		return reply.view('auth/login.ejs', {
 			user: false,
 			response: false,
-			header: false
+			values: {}
 		});
 	});
 
 	fastify.post('/login', async (req, reply) => {
-		let user = await User.load(req.body.email);
-		let valid = await user.checkPassword(req.body.password);
-		if (valid) {
-			req.session.set('user', user.id);
-			return reply.redirect('/');
-		}
+		try {
+			let user = await User.load(req.body.email, 'email');
+			let valid = await user.checkPassword(req.body.password);
+			if (valid) {
+				req.session.set('user', user.id);
+				return reply.redirect('/');
+			}
+		} catch (err) {}
 		return reply.view('auth/login.ejs', {
 			user: false,
 			response: 'Sorry your login was incorrect.',
-			header: false
+			values: req.body
 		});
 	});
 
-	fastify.get('/auth/logout', async (req, reply) => {
+	fastify.get('/logout', async (req, reply) => {
 		req.session.delete();
-		return reply.redirect('/auth/login');
+		return reply.redirect('/login');
 	});
 
 	done();

@@ -16,8 +16,7 @@ module.exports = (fastify, opts, done) => {
 		let post = await Post.load(parseInt(req.params.id));
 		return reply.view('edit.ejs', {
 			user: user,
-			post: post,
-			header: false
+			post: post
 		});
 	});
 
@@ -28,13 +27,12 @@ module.exports = (fastify, opts, done) => {
 		return reply.redirect(post.url);
 	});
 
-	fastify.get('/:user/:post', async (req, reply) => {
+	fastify.get('/@:user/:post', async (req, reply) => {
 		let user = await User.load(req.params.user);
 		let post = await Post.load(req.params.post);
 		return reply.view('post.ejs', {
 			user: user,
-			post: post,
-			header: true
+			post: post
 		});
 	});
 

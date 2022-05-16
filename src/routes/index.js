@@ -11,8 +11,7 @@ module.exports = (fastify, opts, done) => {
 
 		return reply.view('index.ejs', {
 			user: user,
-			posts: posts,
-			header: true
+			posts: posts
 		});
 	});
 

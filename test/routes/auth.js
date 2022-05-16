@@ -13,7 +13,7 @@ tap.test('user is not logged in', async tap => {
 		method: 'GET',
 		url: '/'
 	});
-	tap.match(rsp, {payload: /<a href="\/signup">Sign up<\/a>/});
+	tap.match(rsp, {payload: /<a[^>]+href="\/signup"/});
 });
 
 tap.test('sign up page', async tap => {

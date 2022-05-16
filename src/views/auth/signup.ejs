@@ -1,19 +1,28 @@
-<form action="/signup" method="post">
+<form action="/signup" method="post" class="signup">
+	<h2>Sign up for an account</h2>
 	<label>
 		Email address
-		<input type="email" name="email">
+		<input type="email" name="email" value="<%= values.email %>">
 	</label>
 	<label>
 		Name
-		<input type="text" name="name">
+		<input type="text" name="name" value="<%= values.name %>">
 	</label>
 	<label>
 		Username
-		<input type="text" name="slug">
+		<input type="text" name="slug" value="<%= values.slug %>">
 	</label>
 	<label>
 		Password
-		<input type="password" name="password">
+		<input type="password" name="password" value="<%= values.password %>">
 	</label>
 	<input type="submit" value="Sign up">
+	<% if (response) { %>
+		<div class="signup__response">
+			<%= response %>
+		</div>
+	<% } %>
+	<div class="signup__options">
+		<a href="/login">Login to an existing account</a>
+	</div>
 </form>

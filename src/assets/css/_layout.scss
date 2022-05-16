@@ -2,6 +2,7 @@
 
 body {
 	color: $c-dark;
+	background-color: $c-light;
 	font: 16px/20px $f-system;
 }
 
@@ -10,14 +11,14 @@ body {
 	padding: 15px 0;
 
 	.header__title {
-		font-size: 18px;
+		font-size: 1.25em;
 		margin-left: 15px;
 
 		a {
 			color: $c-dark;
 
 			&:hover {
-				color: $c-blue;
+				color: $c-accent;
 			}
 		}
 	}
@@ -25,5 +26,10 @@ body {
 	.header__nav {
 		position: absolute;
 		right: 15px;
+		top: 15px;
+
+		a {
+			margin-left: 10px;
+		}
 	}
 }
