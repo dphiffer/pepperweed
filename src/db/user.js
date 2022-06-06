@@ -72,8 +72,18 @@ class UserQueries extends Queries {
 	}
 
 	async validateSlug(slug) {
+		let staticRoutes = [
+			'signup',
+			'login',
+			'logout',
+			'new',
+			'edit'
+		];
 		if (! slug) {
 			throw new Queries.InvalidInputError('Please enter a username.');
+		}
+		if (staticRoutes.indexOf(slug) > -1) {
+			throw new Queries.InvalidInputError('Sorry, that is an invalid username.');
 		}
 		let db = await this.connect();
 		let exists = await db.get(`

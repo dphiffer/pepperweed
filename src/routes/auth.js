@@ -24,18 +24,10 @@ module.exports = (fastify, opts, done) => {
 				email: req.body.email,
 				password: req.body.password
 			})
-			if (user) {
-				req.session.set('user', user.id);
-				return reply.redirect('/');
-			} else {
-				return reply.view('auth/signup.ejs', {
-					user: false,
-					response: 'Sorry your account could not be created.',
-					values: req.body
-				});
-			}
+			req.session.set('user', user.id);
+			return reply.redirect('/');
 		} catch (err) {
-			return reply.view('auth/signup.ejs', {
+			return reply.code(400).view('auth/signup.ejs', {
 				user: false,
 				response: err.message,
 				values: req.body

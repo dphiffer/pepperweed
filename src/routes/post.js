@@ -27,7 +27,7 @@ module.exports = (fastify, opts, done) => {
 		return reply.redirect(post.url);
 	});
 
-	fastify.get('/@:user/:post', async (req, reply) => {
+	fastify.get('/:user/:post', async (req, reply) => {
 		let user = await User.load(req.params.user);
 		let post = await Post.load(req.params.post);
 		return reply.view('post.ejs', {

@@ -11,17 +11,14 @@
 		<div class="page">
 			<header class="header">
 				<h1 class="header__title"><a href="/">Dan Phiffer</a></h1>
-				<% if (user) { %>
-					<div class="header__nav">
-						<a href="/@<%= user.slug %>"><%= user.name %></a>
+				<div class="header__nav">
+					<% if (user) { %>
 						<a href="/logout">Logout</a>
-					</div>
-				<% } else { %>
-					<div class="header__nav">
+					<% } else { %>
 						<a href="/signup">Sign up</a>
 						<a href="/login">Login</a>
-					</div>
-				<% } %>
+					<% } %>
+				</div>
 			</header>
 			<%- body %>
 		</div>

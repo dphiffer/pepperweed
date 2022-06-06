@@ -16,7 +16,7 @@ tap.test('user is not logged in', async tap => {
 	tap.match(rsp, {payload: /<a[^>]+href="\/signup"/});
 });
 
-tap.test('sign up page', async tap => {
+tap.test('signup page', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
 		method: 'GET',
@@ -25,7 +25,22 @@ tap.test('sign up page', async tap => {
 	tap.match(rsp.statusCode, 200);
 });
 
-tap.test('user sign up', async tap => {
+tap.test('invalid signup', async tap => {
+	let app = await build();
+	let rsp = await app.inject({
+		method: 'POST',
+		url: '/signup',
+		body: {
+			email: '',
+			slug: '',
+			name: '',
+			password: ''
+		}
+	});
+	tap.match(rsp.statusCode, 400);
+});
+
+tap.test('valid signup', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
 		method: 'POST',
@@ -51,10 +66,10 @@ tap.test('user is logged in', async tap => {
 			'session': cookies[0].value
 		}
 	});
-	tap.match(rsp, {payload: /<a href="\/test">Test<\/a>/});
+	tap.match(rsp, {payload: /<a href="\/logout">Logout<\/a>/});
 });
 
-tap.test('sign up page redirects if logged in', async tap => {
+tap.test('signup page redirects if logged in', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
 		method: 'GET',
@@ -66,7 +81,7 @@ tap.test('sign up page redirects if logged in', async tap => {
 	tap.match(rsp.statusCode, 302);
 });
 
-tap.test('log in page redirects if logged in', async tap => {
+tap.test('login page redirects if logged in', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
 		method: 'GET',
@@ -78,7 +93,7 @@ tap.test('log in page redirects if logged in', async tap => {
 	tap.match(rsp.statusCode, 302);
 });
 
-tap.test('user log out', async tap => {
+tap.test('user logout', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
 		method: 'GET',
@@ -92,7 +107,7 @@ tap.test('user log out', async tap => {
 	tap.match(cookies[0].value, '');
 });
 
-tap.test('log in page', async tap => {
+tap.test('login page', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
 		method: 'GET',
@@ -116,7 +131,7 @@ tap.test('incorrect login', async tap => {
 	tap.match(rsp.cookies.length, 0);
 });
 
-tap.test('user logs in', async tap => {
+tap.test('user login', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
 		method: 'POST',

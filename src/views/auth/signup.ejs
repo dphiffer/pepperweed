@@ -16,12 +16,12 @@
 		Password
 		<input type="password" name="password" value="<%= values.password %>">
 	</label>
-	<input type="submit" value="Sign up">
 	<% if (response) { %>
 		<div class="signup__response">
 			<%= response %>
 		</div>
 	<% } %>
+	<input type="submit" value="Sign up">
 	<div class="signup__options">
 		<a href="/login">Login to an existing account</a>
 	</div>
