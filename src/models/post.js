@@ -26,8 +26,8 @@ class Post extends Base {
 		return `/${this.user.slug}/${this.slug}`;
 	}
 
-	get editUrl() {
-		return `/edit/${this.id}`;
+	get edit_url() {
+		return `/${this.user.slug}/${this.slug}/edit`;
 	}
 
 	static async query(args = {}) {

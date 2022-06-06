@@ -1,1 +1,4 @@
 <h2><%= post.title %></h2>
+<% if (post.user.id == user.id) { %>
+	<p><a href="<%= post.edit_url %>">Edit post</a></p>
+<% } %>

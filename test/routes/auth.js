@@ -22,7 +22,7 @@ tap.test('signup page', async tap => {
 		method: 'GET',
 		url: '/signup'
 	});
-	tap.match(rsp.statusCode, 200);
+	tap.equal(rsp.statusCode, 200);
 });
 
 tap.test('invalid signup', async tap => {
@@ -37,7 +37,7 @@ tap.test('invalid signup', async tap => {
 			password: ''
 		}
 	});
-	tap.match(rsp.statusCode, 400);
+	tap.equal(rsp.statusCode, 400);
 });
 
 tap.test('valid signup', async tap => {
@@ -78,7 +78,7 @@ tap.test('signup page redirects if logged in', async tap => {
 			'session': cookies[0].value
 		}
 	});
-	tap.match(rsp.statusCode, 302);
+	tap.equal(rsp.statusCode, 302);
 });
 
 tap.test('login page redirects if logged in', async tap => {
@@ -90,7 +90,7 @@ tap.test('login page redirects if logged in', async tap => {
 			'session': cookies[0].value
 		}
 	});
-	tap.match(rsp.statusCode, 302);
+	tap.equal(rsp.statusCode, 302);
 });
 
 tap.test('user logout', async tap => {
@@ -103,8 +103,8 @@ tap.test('user logout', async tap => {
 		}
 	});
 	cookies = rsp.cookies;
-	tap.match(rsp.statusCode, 302);
-	tap.match(cookies[0].value, '');
+	tap.equal(rsp.statusCode, 302);
+	tap.equal(cookies[0].value, '');
 });
 
 tap.test('login page', async tap => {
@@ -113,7 +113,7 @@ tap.test('login page', async tap => {
 		method: 'GET',
 		url: '/login'
 	});
-	tap.match(rsp.statusCode, 200);
+	tap.equal(rsp.statusCode, 200);
 });
 
 tap.test('incorrect login', async tap => {
@@ -127,8 +127,8 @@ tap.test('incorrect login', async tap => {
 		}
 	});
 	cookies = rsp.cookies;
-	tap.match(rsp.statusCode, 200);
-	tap.match(rsp.cookies.length, 0);
+	tap.equal(rsp.statusCode, 400);
+	tap.equal(rsp.cookies.length, 0);
 });
 
 tap.test('user login', async tap => {

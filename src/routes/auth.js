@@ -57,7 +57,7 @@ module.exports = (fastify, opts, done) => {
 				return reply.redirect('/');
 			}
 		} catch (err) {}
-		return reply.view('auth/login.ejs', {
+		return reply.code(400).view('auth/login.ejs', {
 			user: false,
 			response: 'Sorry your login was incorrect.',
 			values: req.body

@@ -15,11 +15,10 @@ tap.test('create user and post', async tap => {
 
 	let post = await Post.create(user);
 	tap.equal(post.id, 1);
-
-	// Default URLs should be assigned
-	let hashLength = 40;
-	tap.equal(post.url.length, '/pmaker/'.length + hashLength);
-	tap.match(post, {editUrl: /^\/edit\/\d+$/});
+	tap.match(post, {
+		url: /^\/pmaker\/[a-z0-9]{40}$/,
+		edit_url: /^\/pmaker\/[a-z0-9]{40}\/edit$/
+	});
 });
 
 tap.test('load post by id', async tap => {

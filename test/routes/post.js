@@ -7,6 +7,15 @@ const build = require('../../src/app');
 var cookies = null;
 var url;
 
+tap.test('try to create new post without logging in', async tap => {
+	let app = await build();
+	let rsp = await app.inject({
+		method: 'GET',
+		url: '/new'
+	});
+	tap.equal(rsp.statusCode, 401);
+});
+
 tap.test('signup and create new post', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
@@ -29,7 +38,9 @@ tap.test('signup and create new post', async tap => {
 		}
 	});
 	tap.equal(rsp.statusCode, 302);
-	tap.match(rsp.headers, {location: /^\/edit\/\d+$/});
+	tap.match(rsp.headers, {
+		location: /^\/poster\/[a-z0-9]{40}\/edit$/
+	});
 	url = rsp.headers.location;
 });
 
@@ -37,15 +48,23 @@ tap.test('edit post', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
 		method: 'GET',
-		url: url
+		url: url,
+		cookies: {
+			'session': cookies[0].value
+		}
 	});
-	tap.match(rsp, {payload: /action="\/edit\/\d+"/});
+	tap.match(rsp, {
+		payload: /action="\/poster\/[a-z0-9]{40}\/edit"/
+	});
 
 	rsp = await app.inject({
 		method: 'POST',
 		url: url,
 		body: {
 			title: 'Hello world'
+		},
+		cookies: {
+			'session': cookies[0].value
 		}
 	});
 	tap.equal(rsp.statusCode, 302);
