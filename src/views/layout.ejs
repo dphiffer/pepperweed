@@ -13,6 +13,7 @@
 				<h1 class="header__title"><a href="/">Dan Phiffer</a></h1>
 				<div class="header__nav">
 					<% if (user) { %>
+						<a href="/new">New post</a>
 						<a href="/logout">Logout</a>
 					<% } else { %>
 						<a href="/signup">Sign up</a>
@@ -20,7 +21,9 @@
 					<% } %>
 				</div>
 			</header>
-			<%- body %>
+			<main class="main">
+				<%- body %>
+			</main>
 		</div>
 		<script src="/static/main.js"></script>
 	</body>

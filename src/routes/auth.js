@@ -17,13 +17,13 @@ module.exports = (fastify, opts, done) => {
 	});
 
 	fastify.post('/signup', async (req, reply) => {
+		let values = Object.assign({
+			slug: null,
+			name: null,
+			email: null,
+			password: null
+		}, req.body);
 		try {
-			let values = Object.assign({
-				slug: null,
-				name: null,
-				email: null,
-				password: null
-			}, req.body);
 			let user = await User.create({
 				slug: values.slug,
 				name: values.name,
@@ -55,11 +55,11 @@ module.exports = (fastify, opts, done) => {
 	});
 
 	fastify.post('/login', async (req, reply) => {
+		let values = Object.assign({
+			email: null,
+			password: null
+		}, req.body);
 		try {
-			let values = Object.assign({
-				email: null,
-				password: null
-			}, req.body);
 			let user = await User.load(values.email, 'email');
 			let valid = await user.checkPassword(values.password);
 			if (valid) {
