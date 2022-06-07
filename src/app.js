@@ -41,7 +41,8 @@ async function build(options = {}) {
 	app.register(require('./routes/post'));
 	app.setNotFoundHandler((req, reply) => {
 		const error = require('./routes/error');
-		return error.http404(req, reply);
+		let details = 'The resource you requested was not found.';
+		return error.http404(req, reply, details);
 	});
 
 	return app;

@@ -2,24 +2,23 @@
 
 const User = require('../models/user');
 
-module.exports = {
+let errors = {};
+let codes = {
+	400: 'Bad request',
+	401: 'Unauthorized',
+	403: 'Forbidden',
+	404: 'Not found'
+};
 
-	http401: async (req, reply, details) => {
+for (let code in codes) {
+	errors[`http${code}`] = async (req, reply, details) => {
 		let user = await User.current(req);
-		return reply.code(401).view('error.ejs', {
+		return reply.code(code).view('error.ejs', {
 			user: user,
-			error: 'Unauthorized',
+			error: codes[code],
 			details: details
 		});
-	},
+	};
+}
 
-	http404: async (req, reply, details) => {
-		let user = await User.current(req);
-		return reply.code(404).view('error.ejs', {
-			user: user,
-			error: 'Not found',
-			details: details || 'The resource you requested was not found.'
-		});
-	}
-
-};
+module.exports = errors;
