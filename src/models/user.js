@@ -5,10 +5,6 @@ const Queries = require('../db/queries');
 
 class User extends Base {
 
-	get id() {
-		return this.data.id;
-	}
-
 	get slug() {
 		return this.data.slug;
 	}
