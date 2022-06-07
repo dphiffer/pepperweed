@@ -39,6 +39,10 @@ async function build(options = {}) {
 	app.register(require('./routes/index'));
 	app.register(require('./routes/auth'));
 	app.register(require('./routes/post'));
+	app.setNotFoundHandler((req, reply) => {
+		const error = require('./routes/error');
+		return error.http404(req, reply);
+	});
 
 	return app;
 }

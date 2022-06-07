@@ -18,11 +18,17 @@ module.exports = (fastify, opts, done) => {
 
 	fastify.post('/signup', async (req, reply) => {
 		try {
+			let values = Object.assign({
+				slug: null,
+				name: null,
+				email: null,
+				password: null
+			}, req.body);
 			let user = await User.create({
-				slug: req.body.slug,
-				name: req.body.name,
-				email: req.body.email,
-				password: req.body.password
+				slug: values.slug,
+				name: values.name,
+				email: values.email,
+				password: values.password
 			})
 			req.session.set('user', user.id);
 			return reply.redirect('/');
@@ -30,7 +36,7 @@ module.exports = (fastify, opts, done) => {
 			return reply.code(400).view('auth/signup.ejs', {
 				user: false,
 				response: err.message,
-				values: req.body
+				values: values
 			});
 		}
 	});
@@ -50,8 +56,12 @@ module.exports = (fastify, opts, done) => {
 
 	fastify.post('/login', async (req, reply) => {
 		try {
-			let user = await User.load(req.body.email, 'email');
-			let valid = await user.checkPassword(req.body.password);
+			let values = Object.assign({
+				email: null,
+				password: null
+			}, req.body);
+			let user = await User.load(values.email, 'email');
+			let valid = await user.checkPassword(values.password);
 			if (valid) {
 				req.session.set('user', user.id);
 				return reply.redirect('/');
@@ -60,7 +70,7 @@ module.exports = (fastify, opts, done) => {
 		return reply.code(400).view('auth/login.ejs', {
 			user: false,
 			response: 'Sorry your login was incorrect.',
-			values: req.body
+			values: values
 		});
 	});
 
