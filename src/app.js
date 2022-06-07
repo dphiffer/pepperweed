@@ -11,7 +11,8 @@ async function build(options = {}) {
 	app = require('fastify')(options);
 
 	app.register(require('@fastify/static'), {
-		root: path.join(path.dirname(__dirname), 'public')
+		root: path.join(path.dirname(__dirname), 'static'),
+		prefix: '/static/'
 	});
 
 	app.register(require('@fastify/formbody'));

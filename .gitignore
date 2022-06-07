@@ -3,4 +3,4 @@
 node_modules
 /*.db
 /conf/secrets.js
-/public/*
+/static/*

@@ -13,10 +13,10 @@
     "start:css": "chokidar \"src/assets/css/**/*.scss\" -c \"npm run build:css\"",
     "start:js": "chokidar \"src/assets/js/**/*.js\" -c \"npm run build:js\"",
     "build": "npm-run-all -p build:*",
-    "build:fonts": "mkdir -p public/fonts && cp -R node_modules/source-sans/WOFF public/fonts/ && cp -R node_modules/source-sans/WOFF2 public/fonts/",
-    "build:css": "sass src/assets/css/main.scss public/main.css",
+    "build:fonts": "mkdir -p static/fonts && cp -R node_modules/source-sans/WOFF static/fonts/ && cp -R node_modules/source-sans/WOFF2 static/fonts/",
+    "build:css": "sass src/assets/css/main.scss static/main.css",
     "build:js": "webpack --config ./conf/webpack.js",
-    "build:img": "mkdir -p public/img && cp -R src/assets/img/* public/img/"
+    "build:img": "mkdir -p static/img && cp -R src/assets/img/* static/img/"
   },
   "keywords": [],
   "author": "Dan Phiffer <dan@phiffer.org>",
