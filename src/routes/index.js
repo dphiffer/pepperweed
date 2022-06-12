@@ -1,13 +1,16 @@
 'use strict';
 
-const User = require('../models/user');
-const Post = require('../models/post');
+import User from '../models/user.js';
+import Post from '../models/post.js';
 
-module.exports = (fastify, opts, done) => {
+export default (fastify, opts, done) => {
 
 	fastify.get('/', async (req, reply) => {
 		let posts = await Post.query();
 		let user = await User.current(req);
+		posts.forEach(post => {
+			post.context = 'index';
+		});
 		return reply.view('index.ejs', {
 			user: user,
 			posts: posts

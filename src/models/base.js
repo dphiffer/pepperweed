@@ -12,4 +12,4 @@ class Base {
 	}
 }
 
-module.exports = Base;
+export default Base;

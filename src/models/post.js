@@ -1,10 +1,15 @@
 'use strict';
 
-const crypto = require('crypto');
-const Base = require('./base');
-const User = require('./user');
+import crypto from 'crypto';
+import dateFormat from 'dateformat';
+import db from '../db/index.js';
+import Base from './base.js';
+import User from '../models/user.js';
 
 class Post extends Base {
+
+	static UnknownPostType = class extends Error {};
+	static types = {};
 
 	get slug() {
 		return this.data.slug;
@@ -30,8 +35,15 @@ class Post extends Base {
 		return `/${this.user.slug}/${this.slug}/edit`;
 	}
 
+	get date_formatted() {
+		return dateFormat(this.created, 'mmm d, yyyy');
+	}
+
+	get time_formatted() {
+		return dateFormat(this.created, 'h:MMtt');
+	}
+
 	static async query(args = {}) {
-		let db = require('../db');
 		let query = await db.post.query(args);
 		let posts = [];
 		for (let data of query) {
@@ -41,16 +53,22 @@ class Post extends Base {
 		return posts;
 	}
 
-	static async create(user) {
-		let db = require('../db');
+	static async create(user, type) {
+		if (! Post.types[type]) {
+			throw new Post.UnknownPostType(`Unknown post type '${type}'`);
+		}
+
+		let PostClass = Post.types[type];
+
 		let slug = crypto.randomBytes(20).toString('hex');
-		let data = await db.post.create(user, slug);
+		let attributes = PostClass.attributes();
+		let data = await db.post.create(user, slug, attributes);
+		data.attributes = attributes;
 		let post = await Post.init(data);
 		return post;
 	}
 
 	static async load(id) {
-		let db = require('../db');
 		let data = {};
 		if (typeof id == 'number') {
 			data = await db.post.load('id', id);
@@ -62,23 +80,31 @@ class Post extends Base {
 	}
 
 	static async init(data) {
-		let post = new Post(data);
+		let attributes = data.attributes || {};
+		if (! Post.types[attributes.type]) {
+			throw new Post.UnknownPostType(`Unknown post type '${attributes.type}'`);
+		}
+		let PostClass = this.types[attributes.type];
+		let post = new PostClass(data);
 		post.user = await User.load(data.user_id);
+		post.initAttributes(attributes);
 		return post;
 	}
 
+	static registerType(type, typeClass) {
+		this.types[type] = typeClass;
+	}
+
 	async save() {
-		let db = require('../db');
 		await db.post.update(this);
 		this.data = await db.post.load('id', this.id);
 		return this;
 	}
 
 	async remove() {
-		let db = require('../db');
 		await db.post.remove(this);
 	}
 
 }
 
-module.exports = Post;
+export default Post;

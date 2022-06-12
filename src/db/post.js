@@ -1,6 +1,6 @@
 'use strict';
 
-const Queries = require('./queries');
+import Queries from './queries.js';
 
 class PostQueries extends Queries {
 
@@ -12,6 +12,9 @@ class PostQueries extends Queries {
 			ORDER BY created DESC
 			LIMIT 10
 		`);
+		query.forEach(data => {
+			data.attributes = JSON.parse(data.attributes);
+		});
 		return query;
 	}
 
@@ -29,18 +32,20 @@ class PostQueries extends Queries {
 		if (! data) {
 			throw new Queries.NotFoundError(`Post ${key} '${value}' not found`);
 		}
+		data.attributes = JSON.parse(data.attributes);
 		return data;
 	}
 
-	async create(user, slug) {
+	async create(user, slug, attributes) {
 		let db = await this.connect();
 		let rsp = await db.run(`
 			INSERT INTO post
-			(user_id, slug, created, updated)
-			VALUES ($user_id, $slug, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+			(user_id, slug, attributes, created, updated)
+			VALUES ($user_id, $slug, $attributes, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 		`, {
 			$user_id: user.id,
-			$slug: slug
+			$slug: slug,
+			$attributes: JSON.stringify(attributes)
 		});
 		let post = await this.load('id', rsp.lastID);
 		return post;
@@ -54,11 +59,13 @@ class PostQueries extends Queries {
 			UPDATE post
 			SET slug = $slug,
 			    title = $title,
+			    attributes = $attributes,
 			    updated = CURRENT_TIMESTAMP
 			WHERE id = $id
 		`, {
 			$slug: data.slug,
 			$title: data.title,
+			$attributes: JSON.stringify(post.attributes),
 			$id: post.id
 		});
 		return rsp;
@@ -75,6 +82,6 @@ class PostQueries extends Queries {
 
 }
 
-module.exports = (connect) => {
+export default (connect) => {
 	return new PostQueries(connect);
 };

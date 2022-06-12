@@ -1,10 +1,11 @@
 'use strict';
 
-const User = require('../models/user');
-const Post = require('../models/post');
-const error = require('./error');
+import User from '../models/user.js';
+import Post from '../models/post.js';
+import TextPost from '../models/post/text.js';
+import error from './error.js';
 
-module.exports = (fastify, opts, done) => {
+export default (fastify, opts, done) => {
 
 	fastify.get('/new', async (req, reply) => {
 		let user = await User.current(req);
@@ -12,7 +13,7 @@ module.exports = (fastify, opts, done) => {
 			return error.http401(req, reply, `Sorry, you need to login before
 				you can create a new post.`);
 		}
-		let post = await Post.create(user);
+		let post = await Post.create(user, 'text');
 		return reply.redirect(post.edit_url);
 	});
 
@@ -31,6 +32,7 @@ module.exports = (fastify, opts, done) => {
 			return error.http403(req, reply, `Sorry, you are not allowed to
 				edit that post.`);
 		}
+		post.context = 'edit';
 		return reply.view('edit.ejs', {
 			user: user,
 			post: post
@@ -53,6 +55,7 @@ module.exports = (fastify, opts, done) => {
 				edit that post.`);
 		}
 		post.data.title = req.body.title;
+		post.updateAttributes(req.body);
 		await post.save();
 		return reply.redirect(post.url);
 	});
@@ -63,6 +66,7 @@ module.exports = (fastify, opts, done) => {
 		if (post.user.id != user.id) {
 			return error.http404(req, reply);
 		}
+		post.context = 'view';
 		return reply.view('post.ejs', {
 			user: user,
 			post: post

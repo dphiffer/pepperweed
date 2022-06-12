@@ -1,6 +1,6 @@
 'use strict';
 
-const Queries = require('./queries');
+import Queries from './queries.js';
 
 class OptionQueries extends Queries {
 
@@ -61,6 +61,6 @@ class OptionQueries extends Queries {
 
 }
 
-module.exports = (connect) => {
+export default (connect) => {
 	return new OptionQueries(connect);
 };

@@ -1,0 +1,17 @@
+$breakpoints: (
+	mobile: 376px,
+	tablet: 769px,
+	desktop: 992px,
+	wide: 1200px
+);
+
+@mixin breakpoint($size) {
+	@if map-has-key($breakpoints, $size) {
+		@media (min-width: map-get($breakpoints, $size)) {
+			@content;
+		}
+	} @else {
+		@warn "Error: no breakpoint set for `#{$size}`. "
+		    + "Available breakpoints are: #{map-keys($breakpoints)}.";
+	}
+}

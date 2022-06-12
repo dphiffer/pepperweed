@@ -1,0 +1,30 @@
+@use "variables" as *;
+@use "breakpoints" as *;
+
+.post > h2 {
+	margin-top: 0;
+	margin-bottom: 50px;
+}
+
+.post__content {
+	line-height: 1.5em;
+
+	p {
+		margin-bottom: 1em;
+	}
+}
+
+@include breakpoint(desktop) {
+	.post__columns {
+		display: flex;
+	}
+
+	.post__content {
+		max-width: 700px;
+	}
+
+	.post__meta {
+		width: 100%;
+		padding-left: 30px;
+	}
+}
