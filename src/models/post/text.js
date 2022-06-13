@@ -21,7 +21,9 @@ class TextPost extends Post {
 	}
 
 	initAttributes(attributes) {
-		attributes.values.parsedContent = parse(attributes.values.content);
+		if (attributes.values.content) {
+			attributes.values.parsedContent = parse(attributes.values.content);
+		}
 		this.attributes = attributes;
 	}
 

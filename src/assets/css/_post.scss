@@ -1,17 +1,38 @@
 @use "variables" as *;
 @use "breakpoints" as *;
 
-.post > h2 {
-	margin-top: 0;
-	margin-bottom: 50px;
+.post {
+	position: relative;
+	font-size: 18px;
+	line-height: 30px;
+	padding-top: 30px;
+	margin-bottom: 30px;
+
+	> h2 {
+		position: relative;
+		margin-top: 0;
+		margin-bottom: 60px;
+
+		&::after {
+			content: "";
+			position: absolute;
+			bottom: -15px;
+			left: calc(1065px / 2 - 50vw);
+			right: 0;
+			width: calc(700px + 50vw - 1065px / 2);
+			border-top: 1px solid $c-medium;
+		}
+	}
 }
 
 .post__content {
-	line-height: 1.5em;
-
 	p {
 		margin-bottom: 1em;
 	}
+}
+
+.post__meta {
+	color: $c-medium;
 }
 
 @include breakpoint(desktop) {
@@ -20,11 +41,11 @@
 	}
 
 	.post__content {
-		max-width: 700px;
+		width: 700px;
 	}
 
 	.post__meta {
-		width: 100%;
+		width: 335px;
 		padding-left: 30px;
 	}
 }

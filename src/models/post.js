@@ -1,7 +1,8 @@
 'use strict';
 
 import crypto from 'crypto';
-import dateFormat from 'dateformat';
+import moment from 'moment';
+import momentTimezone from 'moment-timezone';
 import db from '../db/index.js';
 import Base from './base.js';
 import User from '../models/user.js';
@@ -36,11 +37,13 @@ class Post extends Base {
 	}
 
 	get date_formatted() {
-		return dateFormat(this.created, 'mmm d, yyyy');
+		let created = moment.tz(this.created, 'UTC');
+		return created.tz('America/New_York').format('YYYY-MM-DD');
 	}
 
 	get time_formatted() {
-		return dateFormat(this.created, 'h:MMtt');
+		let created = moment.tz(this.created, 'UTC');
+		return created.tz('America/New_York').format('YYYY-MM-DD h:mma z');
 	}
 
 	static async query(args = {}) {

@@ -7,7 +7,7 @@
 			}) %>
 		</div>
 		<div class="post__meta">
-			<span title="Posted at <%= post.time_formatted %>"><%= post.date_formatted %></span>
+			<a href="<%= post.url %>" title="Posted at <%= post.time_formatted %>"><%= post.date_formatted %></a>
 			<% if (post.context != 'index' && post.user.id == user.id) { %>
 				<p><a href="<%= post.edit_url %>">Edit post</a></p>
 			<% } %>
