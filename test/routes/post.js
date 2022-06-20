@@ -4,7 +4,6 @@ import tap from 'tap';
 import fs from 'fs';
 import build from '../../src/app.js';
 import User from '../../src/models/user.js';
-import TextPost from '../../src/models/post/text.js';
 import Post from '../../src/models/post.js';
 
 var cookies = null;
@@ -81,7 +80,7 @@ tap.test('view post', async tap => {
 		method: 'GET',
 		url: url
 	});
-	tap.match(rsp, {payload: /<h2>.*?Hello world.*?<\/h2>/});
+	tap.match(rsp, {payload: /<h2>Hello world<\/h2>/});
 });
 
 tap.test('invalid post requests', async tap => {
@@ -135,7 +134,7 @@ tap.test('invalid post requests', async tap => {
 	tap.equal(rsp.statusCode, 401);
 
 	// Try to edit someone else's post
-	let post = await Post.create(imposter, 'text');
+	let post = await Post.create(imposter);
 	rsp = await app.inject({
 		method: 'GET',
 		url: `/imposter/${post.slug}/edit`,
