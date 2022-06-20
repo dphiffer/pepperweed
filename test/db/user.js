@@ -1,10 +1,10 @@
 'use strict';
 
-import tap from 'tap';
-import db from '../../src/db/index.js';
-import Queries from '../../src/db/queries.js';
+const tap = require('tap');
+const Queries = require('../../src/db/queries');
 
 tap.test('load user by invalid key', async tap => {
+	let db = require('../../src/db');
 	try {
 		let user = await db.user.load('non-existant', 'value');
 	} catch(err) {
@@ -13,6 +13,7 @@ tap.test('load user by invalid key', async tap => {
 });
 
 tap.test('validate empty values', async tap => {
+	let db = require('../../src/db');
 	try {
 		await db.user.validateSlug('');
 	} catch(err) {
@@ -31,6 +32,7 @@ tap.test('validate empty values', async tap => {
 });
 
 tap.test('validate email without @ sign', async tap => {
+	let db = require('../../src/db');
 	try {
 		await db.user.validateEmail('email');
 	} catch(err) {
@@ -39,6 +41,7 @@ tap.test('validate email without @ sign', async tap => {
 });
 
 tap.test('validate password', async tap => {
+	let db = require('../../src/db');
 	try {
 		await db.user.validatePassword('');
 	} catch(err) {
@@ -52,6 +55,7 @@ tap.test('validate password', async tap => {
 });
 
 tap.test('check for signup duplicates', async tap => {
+	let db = require('../../src/db');
 	await db.user.create({
 		name: 'duplicate',
 		slug: 'duplicate',
@@ -81,6 +85,7 @@ tap.test('check for signup duplicates', async tap => {
 });
 
 tap.test('check for smartass usernames', async tap => {
+	let db = require('../../src/db');
 	try {
 		await db.user.validateSlug('login');
 	} catch(err) {

@@ -61,4 +61,4 @@ async function build(options = {}) {
 	return app;
 }
 
-export default build;
+export { build };

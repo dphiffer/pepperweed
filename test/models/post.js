@@ -1,9 +1,9 @@
 'use strict';
 
-import tap from 'tap';
-import Queries from '../../src/db/queries.js';
-import Post from '../../src/models/post.js';
-import User from '../../src/models/user.js';
+const tap = require('tap');
+const Queries = require('../../src/db/queries');
+const Post = require('../../src/models/post');
+const User = require('../../src/models/user');
 
 tap.test('create user and post', async tap => {
 	let user = await User.create({

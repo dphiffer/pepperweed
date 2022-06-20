@@ -1,8 +1,8 @@
 'use strict';
 
-import tap from 'tap';
-import fs from 'fs';
-import build from '../../src/app.js';
+const tap = require('tap');
+const fs = require('fs');
+const build = require('../../src/app');
 
 var app;
 tap.before(async () => {

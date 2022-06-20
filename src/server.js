@@ -2,7 +2,7 @@
 
 import path from 'path';
 import { fileURLToPath } from 'url';
-import build from './app.js';
+import { build } from './app.js';
 
 (async () => {
 	try {

@@ -1,10 +1,10 @@
 'use strict';
 
-import tap from 'tap';
-import fs from 'fs';
-import build from '../../src/app.js';
-import User from '../../src/models/user.js';
-import Post from '../../src/models/post.js';
+const tap = require('tap');
+const fs = require('fs');
+const build = require('../../src/app');
+const User = require('../../src/models/user');
+const Post = require('../../src/models/post');
 
 var cookies = null;
 var url;
