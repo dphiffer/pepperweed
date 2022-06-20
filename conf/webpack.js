@@ -1,12 +1,8 @@
 'use strict';
 
-import path from 'path';
-import { fileURLToPath } from 'url';
+const path = require("path");
 
-let __filename = fileURLToPath(import.meta.url);
-let __dirname = path.dirname(__filename);
-
-export default {
+module.exports = {
 	entry: './src/assets/js/main.js',
 	output: {
 		path: path.resolve(path.dirname(__dirname), 'static/'),

@@ -1,7 +1,7 @@
 'use strict';
 
-import { parse } from 'marked';
-import Post from '../post.js';
+const marked = require('marked');
+const Post = require('../post');
 
 class TextPost extends Post {
 
@@ -22,7 +22,7 @@ class TextPost extends Post {
 
 	initAttributes(attributes) {
 		if (attributes.values.content) {
-			attributes.values.parsedContent = parse(attributes.values.content);
+			attributes.values.parsedContent = marked.parse(attributes.values.content);
 		}
 		this.attributes = attributes;
 	}
@@ -35,4 +35,4 @@ class TextPost extends Post {
 }
 
 Post.registerType('text', TextPost);
-export default TextPost;
+module.exports = TextPost;

@@ -1,16 +1,11 @@
 'use strict';
 
-import crypto from 'crypto';
-import moment from 'moment';
-import momentTimezone from 'moment-timezone';
-import db from '../db/index.js';
-import Base from './base.js';
-import User from '../models/user.js';
+const crypto = require('crypto');
+const moment = require('moment-timezone');
+const Base = require('./base');
+const User = require('../models/user');
 
 class Post extends Base {
-
-	static UnknownPostType = class extends Error {};
-	static types = {};
 
 	get slug() {
 		return this.data.slug;
@@ -47,6 +42,7 @@ class Post extends Base {
 	}
 
 	static async query(args = {}) {
+		let db = require('../db');
 		let query = await db.post.query(args);
 		let posts = [];
 		for (let data of query) {
@@ -56,22 +52,16 @@ class Post extends Base {
 		return posts;
 	}
 
-	static async create(user, type) {
-		if (! Post.types[type]) {
-			throw new Post.UnknownPostType(`Unknown post type '${type}'`);
-		}
-
-		let PostClass = Post.types[type];
-
+	static async create(user) {
+		let db = require('../db');
 		let slug = crypto.randomBytes(20).toString('hex');
-		let attributes = PostClass.attributes();
-		let data = await db.post.create(user, slug, attributes);
-		data.attributes = attributes;
+		let data = await db.post.create(user, slug);
 		let post = await Post.init(data);
 		return post;
 	}
 
 	static async load(id) {
+		let db = require('../db');
 		let data = {};
 		if (typeof id == 'number') {
 			data = await db.post.load('id', id);
@@ -83,31 +73,23 @@ class Post extends Base {
 	}
 
 	static async init(data) {
-		let attributes = data.attributes || {};
-		if (! Post.types[attributes.type]) {
-			throw new Post.UnknownPostType(`Unknown post type '${attributes.type}'`);
-		}
-		let PostClass = this.types[attributes.type];
-		let post = new PostClass(data);
+		let post = new Post(data);
 		post.user = await User.load(data.user_id);
-		post.initAttributes(attributes);
 		return post;
 	}
 
-	static registerType(type, typeClass) {
-		this.types[type] = typeClass;
-	}
-
 	async save() {
+		let db = require('../db');
 		await db.post.update(this);
 		this.data = await db.post.load('id', this.id);
 		return this;
 	}
 
 	async remove() {
+		let db = require('../db');
 		await db.post.remove(this);
 	}
 
 }
 
-export default Post;
+module.exports = Post;

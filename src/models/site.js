@@ -1,16 +1,15 @@
 'use strict';
 
-import sodium from 'sodium-native';
-import db from '../db/index.js';
-
 class Site {
 
 	options = {};
 
 	async setup() {
+		let db = require('../db');
 		this.options = await db.option.all();
 		let sessionKey = await this.getOption('sessionKey');
 		if (! sessionKey) {
+			let sodium = require('sodium-native');
 			let buffer = Buffer.allocUnsafe(sodium.crypto_secretbox_KEYBYTES);
 			sodium.randombytes_buf(buffer);
 			await this.setOption('sessionKey', buffer.toString('hex'));
@@ -18,6 +17,7 @@ class Site {
 	}
 
 	async setOption(key, value) {
+		let db = require('../db');
 		let exists = await db.option.load(key, null);
 		if (! exists) {
 			await db.option.create(key, value);
@@ -28,6 +28,7 @@ class Site {
 	}
 
 	async getOption(key) {
+		let db = require('../db');
 		if (typeof this.options[key] != 'undefined') {
 			return this.options[key];
 		}
@@ -37,6 +38,7 @@ class Site {
 	}
 
 	async removeOption(key) {
+		let db = require('../db');
 		if (typeof this.options[key] != 'undefined') {
 			delete this.options[key];
 		}
@@ -44,4 +46,4 @@ class Site {
 	}
 }
 
-export default new Site();
+module.exports = new Site();

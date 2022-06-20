@@ -1,46 +1,35 @@
 'use strict';
 
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
-import { fileURLToPath } from 'url';
-
-import optionQueries from './option.js';
-import postQueries from './post.js';
-import userQueries from './user.js';
+let fs = require('fs');
+let path = require('path');
+let os = require('os');
+let sqlite3 = require('sqlite3');
+let sqlite = require('sqlite');
 
 let db = null;
+let db_path = process.env.DATABASE;
+let exists = fs.existsSync(db_path);
 
 const connect = async () => {
 	if (db) {
 		return db;
 	}
-
-	let dbPath = process.env.DATABASE || 'data/main.db';
-	let exists = fs.existsSync(dbPath);
-	let __filename = fileURLToPath(import.meta.url);
-	let __dirname = path.dirname(__filename);
-
-	db = await open({
-		filename: dbPath,
+	db = await sqlite.open({
+		filename: db_path,
 		driver: sqlite3.Database
 	});
-
 	if (! exists) {
 		await db.migrate({
 			migrationsPath: path.join(__dirname, 'migrations')
 		});
 		exists = true;
 	}
-
 	return db;
 };
 
-export default {
+module.exports = {
 	connect: connect,
-	option: optionQueries(connect),
-	post: postQueries(connect),
-	user: userQueries(connect)
+	option: require('./option')(connect),
+	post: require('./post')(connect),
+	user: require('./user')(connect)
 };

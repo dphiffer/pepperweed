@@ -1,8 +1,8 @@
 'use strict';
 
-import User from '../models/user.js';
+const User = require('../models/user');
 
-export default (fastify, opts, done) => {
+module.exports = (fastify, opts, done) => {
 
 	fastify.get('/signup', async (req, reply) => {
 		let user = await User.current(req);
@@ -42,6 +42,7 @@ export default (fastify, opts, done) => {
 	});
 
 	fastify.get('/login', async (req, reply) => {
+		let User = require('../models/user');
 		let user = await User.current(req);
 		if (user) {
 			return reply.redirect('/');

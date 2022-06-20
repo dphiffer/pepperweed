@@ -1,9 +1,7 @@
 'use strict';
 
-import bcrypt from 'bcrypt';
-import db from '../db/index.js';
-import Base from './base.js';
-import Queries from '../db/queries.js';
+const Base = require('./base');
+const Queries = require('../db/queries');
 
 class User extends Base {
 
@@ -20,6 +18,8 @@ class User extends Base {
 	}
 
 	static async create(data) {
+		let db = require('../db');
+		let bcrypt = require('bcrypt');
 		let saltRounds = 10;
 		data.password = await bcrypt.hash(data.password, saltRounds);
 		data.id = await db.user.create(data);
@@ -37,6 +37,7 @@ class User extends Base {
 	}
 
 	static async load(id) {
+		let db = require('../db');
 		let data = null;
 		let emailRegex = /^\w+@\w+\.\w+$/;
 		let slugRegex = /^[a-z0-9_-]+$/i;
@@ -56,20 +57,23 @@ class User extends Base {
 	}
 
 	async save() {
+		let db = require('../db');
 		await db.user.update(this);
 		this.data = await db.user.load('id', this.id);
 		return this;
 	}
 
 	async checkPassword(password) {
+		let bcrypt = require('bcrypt');
 		let result = await bcrypt.compare(password, this.data.password);
 		return result;
 	}
 
 	async remove() {
+		let db = require('../db');
 		await db.user.remove(this);
 	}
 
 }
 
-export default User;
+module.exports = User;

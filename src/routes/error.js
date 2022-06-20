@@ -1,6 +1,6 @@
 'use strict';
 
-import User from '../models/user.js';
+const User = require('../models/user');
 
 let errors = {};
 let codes = {
@@ -21,4 +21,4 @@ for (let code in codes) {
 	};
 }
 
-export default errors;
+module.exports = errors;
