@@ -1,7 +1,7 @@
 'use strict';
 
-const tap = require('tap');
-const build = require('../../src/app');
+import tap from 'tap';
+import build from '../../src/app.js';
 
 tap.test('generate http 401', async tap => {
 	let app = await build();
