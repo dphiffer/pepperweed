@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import ejs from 'ejs';
+import { fileURLToPath } from 'url';
 
 import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
@@ -16,6 +17,7 @@ import postRoutes from './routes/post.js';
 import errorRoutes from './routes/error.js';
 
 import site from './models/site.js';
+import TextPost from './models/post/text.js';
 
 var app = null;
 
@@ -24,6 +26,10 @@ async function build(options = {}) {
 		return app;
 	}
 
+	let defaults = {
+		dir: path.dirname(fileURLToPath(import.meta.url))
+	};
+	options = Object.assign(defaults, options);
 	app = Fastify(options);
 
 	app.register(fastifyStatic, {

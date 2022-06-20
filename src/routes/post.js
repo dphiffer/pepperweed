@@ -2,7 +2,6 @@
 
 import User from '../models/user.js';
 import Post from '../models/post.js';
-import TextPost from '../models/post/text.js';
 import error from './error.js';
 
 export default (fastify, opts, done) => {
