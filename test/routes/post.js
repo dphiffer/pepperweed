@@ -80,7 +80,7 @@ tap.test('view post', async tap => {
 		method: 'GET',
 		url: url
 	});
-	tap.match(rsp, {payload: /<h2>Hello world<\/h2>/});
+	tap.match(rsp, {payload: /<h2>.+?Hello world.+?<\/h2>/});
 });
 
 tap.test('invalid post requests', async tap => {
@@ -134,7 +134,7 @@ tap.test('invalid post requests', async tap => {
 	tap.equal(rsp.statusCode, 401);
 
 	// Try to edit someone else's post
-	let post = await Post.create(imposter);
+	let post = await Post.create(imposter, 'text');
 	rsp = await app.inject({
 		method: 'GET',
 		url: `/imposter/${post.slug}/edit`,

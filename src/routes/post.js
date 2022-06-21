@@ -12,7 +12,7 @@ module.exports = (fastify, opts, done) => {
 			return error.http401(req, reply, `Sorry, you need to login before
 				you can create a new post.`);
 		}
-		let post = await Post.create(user);
+		let post = await Post.create(user, 'text');
 		return reply.redirect(post.edit_url);
 	});
 
@@ -31,6 +31,7 @@ module.exports = (fastify, opts, done) => {
 			return error.http403(req, reply, `Sorry, you are not allowed to
 				edit that post.`);
 		}
+		post.context = 'edit';
 		return reply.view('edit.ejs', {
 			user: user,
 			post: post
@@ -53,6 +54,7 @@ module.exports = (fastify, opts, done) => {
 				edit that post.`);
 		}
 		post.data.title = req.body.title;
+		post.updateAttributes(req.body);
 		await post.save();
 		return reply.redirect(post.url);
 	});
@@ -63,6 +65,7 @@ module.exports = (fastify, opts, done) => {
 		if (post.user.id != user.id) {
 			return error.http404(req, reply);
 		}
+		post.context = 'view';
 		return reply.view('post.ejs', {
 			user: user,
 			post: post

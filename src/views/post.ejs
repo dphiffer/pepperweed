@@ -8,7 +8,7 @@
 		</div>
 		<div class="post__meta">
 			<a href="<%= post.url %>" title="Posted at <%= post.time_formatted %>"><%= post.date_formatted %></a>
-			<% if (post.context != 'index' && post.user.id == user.id) { %>
+			<% if (post.context != 'index' && user && user.id == post.user.id) { %>
 				<p><a href="<%= post.edit_url %>">Edit post</a></p>
 			<% } %>
 		</div>

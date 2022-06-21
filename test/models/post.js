@@ -2,10 +2,11 @@
 
 const tap = require('tap');
 const Queries = require('../../src/db/queries');
+const TextPost = require('../../src/models/post/text');
 const Post = require('../../src/models/post');
 const User = require('../../src/models/user');
 
-tap.test('create user and post', async tap => {
+tap.test('create user and text post', async tap => {
 	let user = await User.create({
 		name: 'Post Maker',
 		slug: 'pmaker',
@@ -13,7 +14,7 @@ tap.test('create user and post', async tap => {
 		password: 'alpine'
 	});
 
-	let post = await Post.create(user);
+	let post = await Post.create(user, 'text');
 	tap.equal(post.id, 1);
 	tap.match(post, {
 		url: /^\/pmaker\/[a-z0-9]{40}$/,

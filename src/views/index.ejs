@@ -1,3 +1,6 @@
 <% for (let post of posts) { %>
-	<h2><a href="<%= post.url %>"><%- post.title %></a></h2>
+	<%- include('post.ejs', {
+		post: post,
+		context: 'index'
+	}); %>
 <% } %>

@@ -1,5 +1,7 @@
 'use strict';
 
+const TextPost = require('./post/text');
+
 class Site {
 
 	options = {};

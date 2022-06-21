@@ -17,7 +17,7 @@ async function build(options = {}) {
 
 	app.register(require('@fastify/formbody'));
 
-	app.register(require('point-of-view'), {
+	app.register(require('@fastify/view'), {
 		engine: {
 			ejs: require('ejs')
 		},
