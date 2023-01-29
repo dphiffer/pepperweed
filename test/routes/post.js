@@ -13,7 +13,7 @@ tap.test('try to create new post without logging in', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
 		method: 'GET',
-		url: '/new'
+		url: '/edit'
 	});
 	tap.equal(rsp.statusCode, 401);
 });

@@ -1,5 +1,5 @@
 <form action="<%= post.edit_url %>" method="post">
-	<h2>Edit post</h2>
+	<h2><%= post.id == 'new' ? 'New post' : 'Edit post' %></h2>
 	<label>
 		Title
 		<input type="text" name="title" value="<%= post.title %>">

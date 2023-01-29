@@ -44,13 +44,18 @@ module.exports = (fastify, opts, done) => {
 	fastify.get('/login', async (req, reply) => {
 		let User = require('../models/user');
 		let user = await User.current(req);
+		let redirect = req.query.redirect || '/';
+		if (redirect.substr(0, 1) != '/' || redirect.substr(0, 6) == '/login') {
+			redirect = '/';
+		}
 		if (user) {
-			return reply.redirect('/');
+			return reply.redirect(redirect);
 		}
 		return reply.view('auth/login.ejs', {
 			user: false,
 			response: false,
-			values: {}
+			values: {},
+			redirect: redirect
 		});
 	});
 
@@ -59,18 +64,23 @@ module.exports = (fastify, opts, done) => {
 			email: null,
 			password: null
 		}, req.body);
+		let redirect = req.body.redirect || '/';
 		try {
+			if (redirect.substr(0, 1) != '/' || redirect.substr(0, 6) == '/login') {
+				redirect = '/';
+			}
 			let user = await User.load(values.email, 'email');
 			let valid = await user.checkPassword(values.password);
 			if (valid) {
 				req.session.set('user', user.id);
-				return reply.redirect('/');
+				return reply.redirect(redirect);
 			}
 		} catch (err) {}
 		return reply.code(400).view('auth/login.ejs', {
 			user: false,
 			response: 'Sorry your login was incorrect.',
-			values: values
+			values: values,
+			redirect: redirect
 		});
 	});
 
