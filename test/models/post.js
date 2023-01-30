@@ -18,7 +18,7 @@ tap.test('create user and text post', async tap => {
 	tap.equal(post.id, 1);
 	tap.match(post, {
 		url: /^\/pmaker\/[a-z0-9]{40}$/,
-		edit_url: /^\/pmaker\/[a-z0-9]{40}\/edit$/
+		edit_url: /^\/edit\/1$/
 	});
 });
 

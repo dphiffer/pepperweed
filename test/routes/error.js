@@ -6,7 +6,7 @@ const build = require('../../src/app');
 tap.test('generate http 401', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
-		method: 'GET',
+		method: 'POST',
 		url: '/new'
 	});
 	tap.equal(rsp.statusCode, 401);

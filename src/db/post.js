@@ -30,7 +30,7 @@ class PostQueries extends Queries {
 			WHERE ${key} = ?
 		`, value);
 		if (! data) {
-			throw new Queries.NotFoundError(`Post ${key} '${value}' not found`);
+			throw new Queries.NotFoundError(`Could not find that post`);
 		}
 		data.attributes = JSON.parse(data.attributes);
 		return data;

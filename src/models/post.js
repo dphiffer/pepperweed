@@ -32,7 +32,7 @@ class Post extends Base {
 	}
 
 	get edit_url() {
-		return `/${this.user.slug}/${this.slug}/edit`;
+		return `/edit/${this.id}`;
 	}
 
 	get date_formatted() {
