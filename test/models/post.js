@@ -71,3 +71,22 @@ tap.test('delete post', async tap => {
 	let posts = await Post.query();
 	tap.equal(posts.length, 0);
 });
+
+tap.test('invalid post type', async tap => {
+	let user = await User.load(1);
+
+	try {
+		let user = await User.load(1);
+		let post = await Post.create(user, 'invalid');
+	} catch (err) {
+		tap.equal(err instanceof Post.UnknownPostType, true);
+	}
+
+	try {
+		let post = await Post.init({
+			type: 'invalid'
+		});
+	} catch (err) {
+		tap.equal(err instanceof Post.UnknownPostType, true);
+	}
+});
