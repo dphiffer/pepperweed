@@ -6,6 +6,9 @@ const TextPost = require('../../src/models/post/text');
 const Post = require('../../src/models/post');
 const User = require('../../src/models/user');
 
+let post_id;
+let user_id;
+
 tap.test('create user and text post', async tap => {
 	let user = await User.create({
 		name: 'Post Maker',
@@ -13,18 +16,19 @@ tap.test('create user and text post', async tap => {
 		email: 'pmaker@test.test',
 		password: 'alpine'
 	});
+	user_id = user.id;
 
 	let post = await Post.create(user, 'text');
-	tap.equal(post.id, 1);
+	post_id = post.id;
 	tap.match(post, {
 		url: /^\/pmaker\/[a-z0-9]{40}$/,
-		edit_url: /^\/edit\/1$/
+		edit_url: new RegExp(`^/edit/${post_id}$`)
 	});
 });
 
 tap.test('load post by id', async tap => {
-	let p1 = await Post.load(1);
-	tap.equal(p1.id, 1);
+	let p1 = await Post.load(post_id);
+	tap.equal(p1.id, post_id);
 
 	try {
 		let p2 = await Post.load(99);
@@ -34,7 +38,7 @@ tap.test('load post by id', async tap => {
 });
 
 tap.test('update post', async tap => {
-	let p1 = await Post.load(1);
+	let p1 = await Post.load(post_id);
 	let created = p1.created;
 	let updated = p1.updated;
 
@@ -42,14 +46,14 @@ tap.test('update post', async tap => {
 	p1.data.slug = 'test';
 	await p1.save();
 
-	let p2 = await Post.load(1);
+	let p2 = await Post.load(post_id);
 	tap.equal(p2.title, 'Testing');
 	tap.equal(p2.slug, 'test');
 });
 
 tap.test('load post by slug', async tap => {
 	let p1 = await Post.load('test');
-	tap.equal(p1.id, 1);
+	tap.equal(p1.id, post_id);
 
 	try {
 		let p2 = await Post.load('non-existant');
@@ -60,12 +64,12 @@ tap.test('load post by slug', async tap => {
 
 tap.test('query posts', async tap => {
 	let posts = await Post.query();
-	tap.equal(posts.length, 1);
+	tap.equal((posts.length > 0), true);
 	tap.equal(posts[0].slug, 'test');
 });
 
 tap.test('delete post', async tap => {
-	let post = await Post.load(1);
+	let post = await Post.load(post_id);
 	await post.remove();
 
 	let posts = await Post.query();
@@ -73,10 +77,8 @@ tap.test('delete post', async tap => {
 });
 
 tap.test('invalid post type', async tap => {
-	let user = await User.load(1);
-
 	try {
-		let user = await User.load(1);
+		let user = await User.load(user_id);
 		let post = await Post.create(user, 'invalid');
 	} catch (err) {
 		tap.equal(err instanceof Post.UnknownPostType, true);

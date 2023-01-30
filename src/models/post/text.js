@@ -5,6 +5,10 @@ const Post = require('../post');
 
 class TextPost extends Post {
 
+	get content() {
+		return this.attributes.values.parsedContent || '';
+	}
+
 	static attributes() {
 		return {
 			name: 'Text',
@@ -20,17 +24,23 @@ class TextPost extends Post {
 		};
 	}
 
-	initAttributes(attributes) {
+	init(attributes) {
 		if (attributes.values.content) {
 			attributes.values.parsedContent = marked.parse(attributes.values.content);
 		}
 		this.attributes = attributes;
 	}
 
-	updateAttributes(formData) {
+	async update(formData) {
+		let parsedContent = null;
+		if (formData.content) {
+			parsedContent = marked.parse(formData.content);
+		}
 		this.attributes.values = {
-			content: formData.content
+			content: formData.content,
+			parsedContent: parsedContent
 		};
+		await this.save();
 	}
 }
 

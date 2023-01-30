@@ -44,7 +44,7 @@ module.exports = (fastify, opts, done) => {
 		}
 		let post = await Post.create(user, 'text');
 		post.data.title = req.body.title;
-		post.updateAttributes(req.body);
+		post.update(req.body);
 		await post.save();
 		return reply.redirect(post.url);
 	});
@@ -85,7 +85,7 @@ module.exports = (fastify, opts, done) => {
 			return error.http404(req, reply, `Sorry, you can’t edit that post.`);
 		}
 		post.data.title = req.body.title;
-		post.updateAttributes(req.body);
+		post.update(req.body);
 		await post.save();
 		return reply.redirect(post.url);
 	});

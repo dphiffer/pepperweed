@@ -87,7 +87,7 @@ class Post extends Base {
 		let PostClass = this.types[attributes.type];
 		let post = new PostClass(data);
 		post.user = await User.load(data.user_id);
-		post.initAttributes(attributes);
+		post.init(attributes);
 		return post;
 	}
 

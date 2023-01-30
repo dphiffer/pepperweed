@@ -91,6 +91,7 @@ tap.test('login page redirects if logged in', async tap => {
 		}
 	});
 	tap.equal(rsp.statusCode, 302);
+	tap.equal(rsp.headers.location, '/');
 });
 
 tap.test('user logout', async tap => {
@@ -144,4 +145,61 @@ tap.test('user login', async tap => {
 	cookies = rsp.cookies;
 	tap.match(rsp.statusCode, 302);
 	tap.match(rsp.cookies[0].name, 'session');
+});
+
+tap.test('login redirects', async tap => {
+	let app = await build();
+	let rsp = await app.inject({
+		method: 'GET',
+		url: '/login?redirect=/foo',
+	});
+	tap.match(rsp.payload, /<input type="hidden" name="redirect" value="\/foo">/);
+
+	rsp = await app.inject({
+		method: 'GET',
+		url: '/login?redirect=foo',
+	});
+	tap.match(rsp.payload, /<input type="hidden" name="redirect" value="\/">/);
+
+	rsp = await app.inject({
+		method: 'GET',
+		url: '/login?redirect=/login',
+	});
+	tap.match(rsp.payload, /<input type="hidden" name="redirect" value="\/">/);
+
+	rsp = await app.inject({
+		method: 'POST',
+		url: '/login',
+		body: {
+			email: 'test@test.test',
+			password: 'alpine',
+			redirect: '/foo'
+		}
+	});
+	tap.match(rsp.statusCode, 302);
+	tap.match(rsp.headers.location, '/foo');
+
+	rsp = await app.inject({
+		method: 'POST',
+		url: '/login',
+		body: {
+			email: 'test@test.test',
+			password: 'alpine',
+			redirect: 'foo'
+		}
+	});
+	tap.match(rsp.statusCode, 302);
+	tap.match(rsp.headers.location, '/');
+
+	rsp = await app.inject({
+		method: 'POST',
+		url: '/login',
+		body: {
+			email: 'test@test.test',
+			password: 'alpine',
+			redirect: '/login'
+		}
+	});
+	tap.match(rsp.statusCode, 302);
+	tap.match(rsp.headers.location, '/');
 });
