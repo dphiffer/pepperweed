@@ -9,7 +9,7 @@ const Post = require('../../src/models/post');
 var cookies = null;
 var url;
 
-tap.test('try to create new post without logging in', async tap => {
+tap.test('create new post without logging in', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
 		method: 'GET',
@@ -32,6 +32,17 @@ tap.test('signup and create new post', async tap => {
 		}
 	});
 	cookies = rsp.cookies;
+
+	rsp = await app.inject({
+		method: 'GET',
+		url: '/edit',
+		cookies: {
+			'session': cookies[0].value
+		}
+	});
+	tap.match(rsp, {
+		payload: new RegExp(`action="/new"`)
+	});
 
 	rsp = await app.inject({
 		method: 'POST',
@@ -160,6 +171,16 @@ tap.test('invalid post requests', async tap => {
 	rsp = await app.inject({
 		method: 'POST',
 		url: '/edit/1',
+		cookies: {
+			'session': cookies[0].value
+		}
+	});
+	tap.equal(rsp.statusCode, 404);
+
+	// Try to edit a post that does not exist
+	rsp = await app.inject({
+		method: 'GET',
+		url: '/edit/999',
 		cookies: {
 			'session': cookies[0].value
 		}
