@@ -1,0 +1,13 @@
+<form action="/settings" method="post" class="settings">
+	<h2>Settings</h2>
+	<label>
+		Site title
+		<input type="text" name="title" value="<%= site.title %>">
+	</label>
+	<% if (feedback) { %>
+		<div class="feedback">
+			<%= feedback %>
+		</div>
+	<% } %>
+	<input type="submit" value="Save">
+</form>
