@@ -44,3 +44,10 @@ input[type="submit"] {
 		background-color: $c-dark;
 	}
 }
+
+form .feedback {
+	border: 1px solid $c-alert;
+	background-color: lighten($c-alert, 30%);
+	padding: 15px;
+	margin-bottom: 20px;
+}

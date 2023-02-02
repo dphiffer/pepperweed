@@ -10,7 +10,11 @@ class OptionQueries extends Queries {
 			SELECT key, value
 			FROM option
 		`);
-		return rsp;
+		let all = {};
+		for (let option of rsp) {
+			all[option.key] = option.value;
+		}
+		return all;
 	}
 
 	async load(key, defaultValue = null) {

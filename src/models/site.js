@@ -1,10 +1,16 @@
 'use strict';
 
+const User = require('./user');
 const TextPost = require('./post/text');
 
 class Site {
 
 	options = {};
+	user = null;
+
+	get title() {
+		return this.options.title;
+	}
 
 	async setup() {
 		let db = require('../db');
@@ -29,12 +35,12 @@ class Site {
 		this.options[key] = value;
 	}
 
-	async getOption(key) {
+	async getOption(key, defaultValue = null) {
 		let db = require('../db');
 		if (typeof this.options[key] != 'undefined') {
 			return this.options[key];
 		}
-		let value = await db.option.load(key);
+		let value = await db.option.load(key, defaultValue);
 		this.options[key] = value;
 		return value;
 	}
@@ -45,6 +51,11 @@ class Site {
 			delete this.options[key];
 		}
 		await db.option.remove(key);
+	}
+
+	async checkUser(req) {
+		this.user = await User.current(req);
+		return this.user;
 	}
 }
 
