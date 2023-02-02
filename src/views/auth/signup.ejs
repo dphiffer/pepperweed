@@ -16,9 +16,9 @@
 		Password
 		<input type="password" name="password" value="<%= values.password %>">
 	</label>
-	<% if (response) { %>
-		<div class="signup__response">
-			<%= response %>
+	<% if (feedback) { %>
+		<div class="feedback">
+			<%= feedback %>
 		</div>
 	<% } %>
 	<input type="submit" value="Sign up">

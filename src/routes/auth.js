@@ -2,21 +2,20 @@
 
 const User = require('../models/user');
 
-module.exports = (fastify, opts, done) => {
+module.exports = (app, opts, done) => {
 
-	fastify.get('/signup', async (req, reply) => {
-		let user = await User.current(req);
+	app.get('/signup', async (req, reply) => {
+		let user = await app.site.checkUser(req);
 		if (user) {
 			return reply.redirect('/');
 		}
 		return reply.view('auth/signup.ejs', {
-			user: false,
-			response: false,
+			feedback: null,
 			values: {}
 		});
 	});
 
-	fastify.post('/signup', async (req, reply) => {
+	app.post('/signup', async (req, reply) => {
 		let values = Object.assign({
 			slug: null,
 			name: null,
@@ -34,16 +33,14 @@ module.exports = (fastify, opts, done) => {
 			return reply.redirect('/');
 		} catch (err) {
 			return reply.code(400).view('auth/signup.ejs', {
-				user: false,
-				response: err.message,
+				feedback: err.message,
 				values: values
 			});
 		}
 	});
 
-	fastify.get('/login', async (req, reply) => {
-		let User = require('../models/user');
-		let user = await User.current(req);
+	app.get('/login', async (req, reply) => {
+		let user = await app.site.checkUser(req);
 		let redirect = req.query.redirect || '/';
 		if (redirect.substr(0, 1) != '/' || redirect.substr(0, 6) == '/login') {
 			redirect = '/';
@@ -52,14 +49,13 @@ module.exports = (fastify, opts, done) => {
 			return reply.redirect(redirect);
 		}
 		return reply.view('auth/login.ejs', {
-			user: false,
-			response: false,
+			feedback: null,
 			values: {},
 			redirect: redirect
 		});
 	});
 
-	fastify.post('/login', async (req, reply) => {
+	app.post('/login', async (req, reply) => {
 		let values = Object.assign({
 			email: null,
 			password: null
@@ -77,14 +73,13 @@ module.exports = (fastify, opts, done) => {
 			}
 		} catch (err) {}
 		return reply.code(400).view('auth/login.ejs', {
-			user: false,
-			response: 'Sorry your login was incorrect.',
+			feedback: 'Sorry, your login was incorrect.',
 			values: values,
 			redirect: redirect
 		});
 	});
 
-	fastify.get('/logout', async (req, reply) => {
+	app.get('/logout', async (req, reply) => {
 		req.session.delete();
 		return reply.redirect('/login');
 	});

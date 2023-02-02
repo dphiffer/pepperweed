@@ -3,17 +3,18 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Hello</title>
+		<title><%= site.title %></title>
 		<link rel="stylesheet" href="/static/main.css">
 		<link rel="icon" href="/static/img/pepperweed.png">
 	</head>
 	<body>
 		<div class="page">
 			<header class="header">
-				<h1 class="header__title"><a href="/">Dan Phiffer</a></h1>
+				<h1 class="header__title"><a href="/"><%= site.title %></a></h1>
 				<div class="header__nav">
-					<% if (user) { %>
+					<% if (site.user) { %>
 						<a href="/edit">Post</a>
+						<a href="/settings">Settings</a>
 						<a href="/logout">Logout</a>
 					<% } else { %>
 						<a href="/login">Login</a>

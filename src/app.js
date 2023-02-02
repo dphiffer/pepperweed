@@ -17,16 +17,19 @@ async function build(options = {}) {
 
 	app.register(require('@fastify/formbody'));
 
+	app.site = require('./models/site');
+	await app.site.setup();
+
 	app.register(require('@fastify/view'), {
 		engine: {
 			ejs: require('ejs')
 		},
 		root: path.join(__dirname, 'views'),
+		defaultContext: {
+			site: app.site
+		},
 		layout: 'layout.ejs'
 	});
-
-	app.site = require('./models/site');
-	await app.site.setup();
 
 	let sessionKey = await app.site.getOption('sessionKey');
 	app.register(require('@fastify/secure-session'), {
@@ -39,9 +42,11 @@ async function build(options = {}) {
 	app.register(require('./routes/index'));
 	app.register(require('./routes/auth'));
 	app.register(require('./routes/post'));
-	app.setNotFoundHandler((req, reply) => {
+	app.register(require('./routes/settings'));
+	app.setNotFoundHandler(async (req, reply) => {
+		await app.site.checkUser(req);
 		const error = require('./routes/error');
-		let details = 'The resource you requested was not found.';
+		let details = 'The requested page was not found.';
 		return error.http404(req, reply, details);
 	});
 

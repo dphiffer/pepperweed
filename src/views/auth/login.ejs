@@ -10,9 +10,9 @@
 			Password
 			<input type="password" name="password" value="<%= values.password %>">
 		</label>
-		<% if (response) { %>
-			<div class="login__response">
-				<%= response %>
+		<% if (feedback) { %>
+			<div class="feedback">
+				<%= feedback %>
 			</div>
 		<% } %>
 		<input type="submit" value="Login">

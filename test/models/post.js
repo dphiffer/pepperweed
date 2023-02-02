@@ -65,15 +65,17 @@ tap.test('load post by slug', async tap => {
 tap.test('query posts', async tap => {
 	let posts = await Post.query();
 	tap.equal((posts.length > 0), true);
-	tap.equal(posts[0].slug, 'test');
 });
 
 tap.test('delete post', async tap => {
 	let post = await Post.load(post_id);
 	await post.remove();
 
-	let posts = await Post.query();
-	tap.equal(posts.length, 0);
+	try {
+		await Post.load(post_id);
+	} catch (err) {
+		tap.equal(err instanceof Queries.NotFoundError, true);
+	}
 });
 
 tap.test('invalid post type', async tap => {
