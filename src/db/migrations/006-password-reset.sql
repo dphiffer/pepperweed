@@ -2,10 +2,17 @@
 -- Up
 --------------------------------------------------------------------------------
 
-INSERT INTO option (key, value) VALUES ('title', 'Peperweed');
+CREATE TABLE password_reset (
+	id TEXT PRIMARY KEY,
+	user_id INTEGER,
+	code TEXT,
+	status TEXT,
+	created TEXT,
+	updated TEXT
+);
 
 --------------------------------------------------------------------------------
 -- Down
 --------------------------------------------------------------------------------
 
-DELETE FROM option WHERE key = 'title';
+DROP TABLE password_reset;

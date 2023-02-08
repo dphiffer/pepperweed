@@ -84,6 +84,82 @@ module.exports = (app, opts, done) => {
 		return reply.redirect('/login');
 	});
 
+	app.get('/password', async (req, reply) => {
+		let user = await app.site.checkUser(req);
+		if (user) {
+			return reply.redirect('/');
+		}
+		return reply.view('auth/password.ejs', {
+			feedback: null,
+			values: {}
+		});
+	});
+
+	app.post('/password', async (req, reply) => {
+		let user = await app.site.checkUser(req);
+		if (user) {
+			return reply.redirect('/');
+		}
+		try {
+			let resetId = await User.resetPassword(app, req.body.email);
+			return reply.redirect(`/password/${resetId}`);
+		} catch (err) {
+			return reply.view('auth/password.ejs', {
+				feedback: err.message,
+				values: {
+					email: req.body.email
+				}
+			});
+		}
+	});
+
+	app.get('/password/:id', async (req, reply) => {
+		let user = await app.site.checkUser(req);
+		if (user) {
+			return reply.redirect('/');
+		}
+		return reply.view('auth/password_code.ejs', {
+			feedback: null,
+			id: req.params.id
+		});
+	});
+
+	app.post('/password/:id', async (req, reply) => {
+		let user = await app.site.checkUser(req);
+		if (user) {
+			return reply.redirect('/');
+		}
+		user = await User.checkPasswordReset(req.params.id, req.body.code);
+		if (user) {
+			req.session.set('user', user.id);
+			return reply.redirect('/password/reset');
+		} else {
+			return reply.view('auth/password_code.ejs', {
+				feedback: 'Sorry, that code was incorrect.',
+				id: req.params.id
+			});
+		}
+	});
+
+	app.get('/password/reset', async (req, reply) => {
+		let user = await app.site.checkUser(req);
+		if (! user) {
+			return reply.redirect('/password');
+		}
+		return reply.view('auth/password_reset.ejs', {
+			feedback: null
+		});
+	});
+
+	app.post('/password/reset', async (req, reply) => {
+		let user = await app.site.checkUser(req);
+		if (! user) {
+			return reply.redirect('/password');
+		}
+		await user.setPassword(req.body.password);
+		return reply.redirect('/');
+	});
+
 	done();
 
 };

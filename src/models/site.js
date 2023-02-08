@@ -1,5 +1,6 @@
 'use strict';
 
+const nodemailer = require('nodemailer');
 const User = require('./user');
 const TextPost = require('./post/text');
 
@@ -12,9 +13,22 @@ class Site {
 		return this.options.title;
 	}
 
+	get fromEmail() {
+		return this.options.fromEmail;
+	}
+
+	get smtpConfig() {
+		return this.options.smtpConfig;
+	}
+
 	async setup() {
 		let db = require('../db');
 		this.options = await db.option.all();
+		await this.setupSessions();
+		await this.setupMailer();
+	}
+
+	async setupSessions() {
 		let sessionKey = await this.getOption('sessionKey');
 		if (! sessionKey) {
 			let sodium = require('sodium-native');
@@ -22,6 +36,20 @@ class Site {
 			sodium.randombytes_buf(buffer);
 			await this.setOption('sessionKey', buffer.toString('hex'));
 		}
+	}
+
+	setupMailer(config = null) {
+		if (! config) {
+			config = {
+				sendmail: true,
+				newline: 'unix',
+				path: '/usr/sbin/sendmail'
+			};
+			if (this.smtpConfig) {
+				config = this.smtpConfig;
+			}
+		}
+		this.mailer = nodemailer.createTransport(config);
 	}
 
 	async setOption(key, value) {

@@ -54,7 +54,9 @@ tap.test('save settings', async tap => {
 		method: 'POST',
 		url: '/settings',
 		body: {
-			title: 'Testing'
+			title: 'Testing',
+			fromEmail: 'test@test.test',
+			smtpConfig: 'smtp://user:pass@smtp.example.com'
 		},
 		cookies: {
 			'session': cookies[0].value
@@ -73,20 +75,53 @@ tap.test('save settings', async tap => {
 	});
 });
 
-tap.test('save invalid settings', async tap => {
+tap.test('save settings without a site title', async tap => {
 	let app = await build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/settings',
 		body: {
-			title: ''
+			title: '',
+			fromEmail: 'test@test.test',
+			smtpConfig: 'smtp://user:pass@smtp.example.com'
 		},
 		cookies: {
 			'session': cookies[0].value
 		}
 	});
-	tap.equal(rsp.statusCode, 200);
-	tap.match(rsp, {
-		payload: /<div class="feedback">\s*Please enter a site title.\s*<\/div>/
+	tap.equal(rsp.statusCode, 400);
+});
+
+tap.test('save settings without a from email', async tap => {
+	let app = await build();
+	let rsp = await app.inject({
+		method: 'POST',
+		url: '/settings',
+		body: {
+			title: 'Testing',
+			fromEmail: '',
+			smtpConfig: 'smtp://user:pass@smtp.example.com'
+		},
+		cookies: {
+			'session': cookies[0].value
+		}
 	});
+	tap.equal(rsp.statusCode, 400);
+});
+
+tap.test('save settings without an smtp config', async tap => {
+	let app = await build();
+	let rsp = await app.inject({
+		method: 'POST',
+		url: '/settings',
+		body: {
+			title: 'Testing',
+			fromEmail: 'test@test.test',
+			smtpConfig: ''
+		},
+		cookies: {
+			'session': cookies[0].value
+		}
+	});
+	tap.equal(rsp.statusCode, 400);
 });
