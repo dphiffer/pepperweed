@@ -4,6 +4,14 @@
 		Site title
 		<input type="text" name="title" value="<%= site.title %>">
 	</label>
+	<label>
+		Send email from
+		<input type="text" name="fromEmail" value="<%= site.fromEmail %>">
+	</label>
+	<label>
+		SMTP config
+		<input type="text" name="smtpConfig" value="<%= site.smtpConfig %>">
+	</label>
 	<% if (feedback) { %>
 		<div class="feedback">
 			<%= feedback %>

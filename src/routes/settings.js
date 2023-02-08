@@ -20,16 +20,29 @@ module.exports = (app, opts, done) => {
 			return error.http401(req, reply, `Sorry, you need to login before
 				you can modify settings.`);
 		}
-		var feedback;
+		var feedback = null;
 		if (req.body.title) {
 			await app.site.setOption('title', req.body.title);
-			return reply.redirect('/');
 		} else {
 			feedback = 'Please enter a site title.';
 		}
-		return reply.view('settings.ejs', {
-			feedback: feedback
-		});
+		if (req.body.fromEmail) {
+			await app.site.setOption('fromEmail', req.body.fromEmail);
+		} else {
+			feedback = 'Please enter an email address to send from.';
+		}
+		if (req.body.smtpConfig) {
+			await app.site.setOption('smtpConfig', req.body.smtpConfig);
+		} else {
+			feedback = 'Please enter an SMTP config.';
+		}
+		if (feedback) {
+			return reply.code(400).view('settings.ejs', {
+				feedback: feedback
+			});
+		} else {
+			return reply.redirect('/');
+		}
 	});
 
 	done();

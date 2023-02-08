@@ -129,6 +129,48 @@ class UserQueries extends Queries {
 		}
 	}
 
+	async createPasswordReset(id, user_id, code) {
+		let db = await this.connect();
+		let rsp = await db.run(`
+			INSERT INTO password_reset
+			(id, user_id, code, status, created, updated)
+			VALUES ($id, $user_id, $code, $status, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+		`, {
+			$id: id,
+			$user_id: user_id,
+			$code: code,
+			$status: 'created'
+		});
+		let reset = await this.loadPasswordReset(rsp.lastID);
+		return reset;
+	}
+
+	async loadPasswordReset(id) {
+		let db = await this.connect();
+		let data = await db.get(`
+			SELECT *
+			FROM password_reset
+			WHERE id = ?
+		`, id);
+		if (data) {
+			await this.updatePasswordReset(id, 'loaded');
+		}
+		return data;
+	}
+
+	async updatePasswordReset(id, status) {
+		let db = await this.connect();
+		let rsp = await db.run(`
+			UPDATE password_reset
+			SET status = $status
+			WHERE id = $id
+		`, {
+			$id: id,
+			$status: status
+		});
+		return rsp;
+	}
+
 }
 
 module.exports = connect => {
