@@ -23,6 +23,9 @@ module.exports = (app, opts, done) => {
 			password: null
 		}, req.body);
 		try {
+			if (! app.site.signupEnabled) {
+				throw new Error('Sorry, you cannot sign up for a new account.');
+			}
 			let user = await User.create({
 				slug: values.slug,
 				name: values.name,

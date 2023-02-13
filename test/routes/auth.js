@@ -409,3 +409,27 @@ tap.test('password reset login with changed password', async () => {
 	tap.equal(rsp.statusCode, 302);
 	tap.equal(rsp.cookies[0].name, 'session');
 });
+
+tap.test('disable signup', async () => {
+	let app = await build();
+	await app.site.setOption('signupEnabled', '0');
+
+	let rsp = await app.inject({
+		method: 'GET',
+		url: '/signup'
+	});
+	tap.equal(rsp.statusCode, 200);
+	tap.match(rsp, {payload: /Sorry, you cannot sign up for a new account./});
+
+	rsp = await app.inject({
+		method: 'POST',
+		url: '/signup',
+		body: {
+			email: 'test@test.test',
+			slug: 'test',
+			name: 'Test',
+			password: 'alpine'
+		}
+	});
+	tap.equal(rsp.statusCode, 400);
+});
