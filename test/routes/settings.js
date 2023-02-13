@@ -125,3 +125,22 @@ tap.test('save settings without an smtp config', async tap => {
 	});
 	tap.equal(rsp.statusCode, 400);
 });
+
+tap.test('save settings enabling signup', async tap => {
+	let app = await build();
+	let rsp = await app.inject({
+		method: 'POST',
+		url: '/settings',
+		body: {
+			title: 'Testing',
+			fromEmail: 'test@test.test',
+			smtpConfig: 'smtp://user:pass@smtp.example.com',
+			signupEnabled: '1'
+		},
+		cookies: {
+			'session': cookies[0].value
+		}
+	});
+	let signupEnabled = await app.site.getOption('signupEnabled');
+	tap.equal(signupEnabled, '1');
+});

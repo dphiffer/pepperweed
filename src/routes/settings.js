@@ -36,6 +36,11 @@ module.exports = (app, opts, done) => {
 		} else {
 			feedback = 'Please enter an SMTP config.';
 		}
+		if (req.body.signupEnabled) {
+			await app.site.setOption('signupEnabled', '1');
+		} else {
+			await app.site.setOption('signupEnabled', '0');
+		}
 		if (feedback) {
 			return reply.code(400).view('settings.ejs', {
 				feedback: feedback

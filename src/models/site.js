@@ -21,6 +21,10 @@ class Site {
 		return this.options.smtpConfig;
 	}
 
+	get signupEnabled() {
+		return (this.options.signupEnabled == '1');
+	}
+
 	async setup() {
 		let db = require('../db');
 		this.options = await db.option.all();

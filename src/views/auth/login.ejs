@@ -19,6 +19,8 @@
 	</form>
 	<div class="login__options">
 		<a href="/password">Forget your password?</a>
-		<a href="/signup">Sign up for a new account</a>
+		<% if (site.signupsEnabled) { %>
+			<a href="/signup">Sign up for a new account</a>
+		<% } %>
 	</div>
 </div>
