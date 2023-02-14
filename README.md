@@ -4,7 +4,7 @@ Perennial media archive
 
 ## Dependencies
 
-* [node.js](https://nodejs.org/) (tested on v16)
+* [node.js](https://nodejs.org/) (tested on v18)
 
 ## Setup
 
