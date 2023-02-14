@@ -2,21 +2,20 @@
 
 const User = require('../models/user');
 
-module.exports = (fastify, opts, done) => {
+module.exports = (app, opts, done) => {
 
-	fastify.get('/signup', async (req, reply) => {
-		let user = await User.current(req);
+	app.get('/signup', async (req, reply) => {
+		let user = await app.site.checkUser(req);
 		if (user) {
 			return reply.redirect('/');
 		}
 		return reply.view('auth/signup.ejs', {
-			user: false,
-			response: false,
+			feedback: null,
 			values: {}
 		});
 	});
 
-	fastify.post('/signup', async (req, reply) => {
+	app.post('/signup', async (req, reply) => {
 		let values = Object.assign({
 			slug: null,
 			name: null,
@@ -24,6 +23,9 @@ module.exports = (fastify, opts, done) => {
 			password: null
 		}, req.body);
 		try {
+			if (! app.site.signupEnabled) {
+				throw new Error('Sorry, you cannot sign up for a new account.');
+			}
 			let user = await User.create({
 				slug: values.slug,
 				name: values.name,
@@ -34,16 +36,14 @@ module.exports = (fastify, opts, done) => {
 			return reply.redirect('/');
 		} catch (err) {
 			return reply.code(400).view('auth/signup.ejs', {
-				user: false,
-				response: err.message,
+				feedback: err.message,
 				values: values
 			});
 		}
 	});
 
-	fastify.get('/login', async (req, reply) => {
-		let User = require('../models/user');
-		let user = await User.current(req);
+	app.get('/login', async (req, reply) => {
+		let user = await app.site.checkUser(req);
 		let redirect = req.query.redirect || '/';
 		if (redirect.substr(0, 1) != '/' || redirect.substr(0, 6) == '/login') {
 			redirect = '/';
@@ -52,14 +52,13 @@ module.exports = (fastify, opts, done) => {
 			return reply.redirect(redirect);
 		}
 		return reply.view('auth/login.ejs', {
-			user: false,
-			response: false,
+			feedback: null,
 			values: {},
 			redirect: redirect
 		});
 	});
 
-	fastify.post('/login', async (req, reply) => {
+	app.post('/login', async (req, reply) => {
 		let values = Object.assign({
 			email: null,
 			password: null
@@ -77,16 +76,91 @@ module.exports = (fastify, opts, done) => {
 			}
 		} catch (err) {}
 		return reply.code(400).view('auth/login.ejs', {
-			user: false,
-			response: 'Sorry your login was incorrect.',
+			feedback: 'Sorry, your login was incorrect.',
 			values: values,
 			redirect: redirect
 		});
 	});
 
-	fastify.get('/logout', async (req, reply) => {
+	app.get('/logout', async (req, reply) => {
 		req.session.delete();
 		return reply.redirect('/login');
+	});
+
+	app.get('/password', async (req, reply) => {
+		let user = await app.site.checkUser(req);
+		if (user) {
+			return reply.redirect('/');
+		}
+		return reply.view('auth/password.ejs', {
+			feedback: null,
+			values: {}
+		});
+	});
+
+	app.post('/password', async (req, reply) => {
+		let user = await app.site.checkUser(req);
+		if (user) {
+			return reply.redirect('/');
+		}
+		try {
+			let resetId = await User.resetPassword(app, req.body.email);
+			return reply.redirect(`/password/${resetId}`);
+		} catch (err) {
+			return reply.view('auth/password.ejs', {
+				feedback: err.message,
+				values: {
+					email: req.body.email
+				}
+			});
+		}
+	});
+
+	app.get('/password/:id', async (req, reply) => {
+		let user = await app.site.checkUser(req);
+		if (user) {
+			return reply.redirect('/');
+		}
+		return reply.view('auth/password_code.ejs', {
+			feedback: null,
+			id: req.params.id
+		});
+	});
+
+	app.post('/password/:id', async (req, reply) => {
+		let user = await app.site.checkUser(req);
+		if (user) {
+			return reply.redirect('/');
+		}
+		user = await User.checkPasswordReset(req.params.id, req.body.code);
+		if (user) {
+			req.session.set('user', user.id);
+			return reply.redirect('/password/reset');
+		} else {
+			return reply.view('auth/password_code.ejs', {
+				feedback: 'Sorry, that code was incorrect.',
+				id: req.params.id
+			});
+		}
+	});
+
+	app.get('/password/reset', async (req, reply) => {
+		let user = await app.site.checkUser(req);
+		if (! user) {
+			return reply.redirect('/password');
+		}
+		return reply.view('auth/password_reset.ejs', {
+			feedback: null
+		});
+	});
+
+	app.post('/password/reset', async (req, reply) => {
+		let user = await app.site.checkUser(req);
+		if (! user) {
+			return reply.redirect('/password');
+		}
+		await user.setPassword(req.body.password);
+		return reply.redirect('/');
 	});
 
 	done();

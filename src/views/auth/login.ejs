@@ -4,21 +4,23 @@
 		<h2>Login to your account</h2>
 		<label>
 			Email address
-			<input type="text" name="email" value="<%= values.email %>">
+			<input type="email" name="email" value="<%= values.email %>">
 		</label>
 		<label>
 			Password
 			<input type="password" name="password" value="<%= values.password %>">
 		</label>
-		<% if (response) { %>
-			<div class="login__response">
-				<%= response %>
+		<% if (feedback) { %>
+			<div class="feedback">
+				<%= feedback %>
 			</div>
 		<% } %>
 		<input type="submit" value="Login">
 	</form>
 	<div class="login__options">
-		<a href="/password_reset">Forget your password?</a>
-		<a href="/signup">Sign up for a new account</a>
+		<a href="/password">Forget your password?</a>
+		<% if (site.signupsEnabled) { %>
+			<a href="/signup">Sign up for a new account</a>
+		<% } %>
 	</div>
 </div>

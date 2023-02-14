@@ -5,11 +5,16 @@ body.auth {
 }
 
 .login,
-.signup {
+.signup,
+.password {
 	margin: 20px auto 0 auto;
 	width: 100%;
 	padding: 15px;
 	max-width: 300px;
+
+	p {
+		margin-bottom: 20px;
+	}
 
 	label {
 		display: block;
@@ -67,11 +72,9 @@ body.auth {
 		}
 	}
 
-	.login__response,
-	.signup__response {
-		border: 1px solid $c-alert;
-		background-color: lighten($c-alert, 30%);
-		padding: 15px;
-		margin-bottom: 20px;
+	input[type="text"].reset-code {
+		font-family: $f-monospace;
+		font-size: 2em;
+		width: 140px;
 	}
 }

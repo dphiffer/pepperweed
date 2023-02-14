@@ -1,7 +1,5 @@
 'use strict';
 
-const User = require('../models/user');
-
 let errors = {};
 let codes = {
 	400: 'Bad request',
@@ -12,9 +10,7 @@ let codes = {
 
 for (let code in codes) {
 	errors[`http${code}`] = async (req, reply, details) => {
-		let user = await User.current(req);
 		return reply.code(code).view('error.ejs', {
-			user: user,
 			error: codes[code],
 			details: details
 		});

@@ -1,27 +1,33 @@
 <form action="/signup" method="post" class="signup">
 	<h2>Sign up for an account</h2>
-	<label>
-		Email address
-		<input type="email" name="email" value="<%= values.email %>">
-	</label>
-	<label>
-		Name
-		<input type="text" name="name" value="<%= values.name %>">
-	</label>
-	<label>
-		Username
-		<input type="text" name="slug" value="<%= values.slug %>">
-	</label>
-	<label>
-		Password
-		<input type="password" name="password" value="<%= values.password %>">
-	</label>
-	<% if (response) { %>
-		<div class="signup__response">
-			<%= response %>
+	<% if (site.signupsEnabled) { %>
+		<label>
+			Email address
+			<input type="email" name="email" value="<%= values.email %>">
+		</label>
+		<label>
+			Name
+			<input type="text" name="name" value="<%= values.name %>">
+		</label>
+		<label>
+			Username
+			<input type="text" name="slug" value="<%= values.slug %>">
+		</label>
+		<label>
+			Password
+			<input type="password" name="password" value="<%= values.password %>">
+		</label>
+		<% if (feedback) { %>
+			<div class="feedback">
+				<%= feedback %>
+			</div>
+		<% } %>
+		<input type="submit" value="Sign up">
+	<% } else { %>
+		<div class="feedback">
+			Sorry, you cannot sign up for a new account.
 		</div>
 	<% } %>
-	<input type="submit" value="Sign up">
 	<div class="signup__options">
 		<a href="/login">Login to an existing account</a>
 	</div>

@@ -5,29 +5,27 @@ const Post = require('../models/post');
 const TextPost = require('../models/post/text');
 const error = require('./error');
 
-module.exports = (fastify, opts, done) => {
+module.exports = (app, opts, done) => {
 
-	fastify.get('/:user/:post', async (req, reply) => {
+	app.get('/:user/:post', async (req, reply) => {
+		await app.site.checkUser(req);
 		let user = await User.load(req.params.user);
 		let post = await Post.load(req.params.post);
 		if (post.user.id != user.id) {
 			return error.http404(req, reply);
 		}
 		post.context = 'view';
-		let current_user = await User.current(req);
 		return reply.view('post.ejs', {
-			user: current_user,
 			post: post
 		});
 	});
 
-	fastify.get('/edit', async (req, reply) => {
-		let user = await User.current(req);
+	app.get('/edit', async (req, reply) => {
+		let user = await app.site.checkUser(req);
 		if (! user) {
 			return reply.redirect('/login?redirect=/edit');
 		}
 		return reply.view('edit.ejs', {
-			user: user,
 			post: {
 				id: 'new',
 				edit_url: '/new',
@@ -36,8 +34,8 @@ module.exports = (fastify, opts, done) => {
 		});
 	});
 
-	fastify.post('/new', async (req, reply) => {
-		let user = await User.current(req);
+	app.post('/new', async (req, reply) => {
+		let user = await app.site.checkUser(req);
 		if (! user) {
 			return error.http401(req, reply, `Sorry, you need to login before
 				you can create a new post.`);
@@ -49,11 +47,11 @@ module.exports = (fastify, opts, done) => {
 		return reply.redirect(post.url);
 	});
 
-	fastify.get('/edit/:id', async (req, reply) => {
+	app.get('/edit/:id', async (req, reply) => {
 		var user, post, feedback;
 		try {
 			feedback = 'Sorry, you can’t edit that post.';
-			user = await User.current(req);
+			user = await app.site.checkUser(req);
 			if (! user) {
 				feedback += ` <a href="/login?redirect=${req.url}">Try logging in?</a>`;
 			}
@@ -67,17 +65,16 @@ module.exports = (fastify, opts, done) => {
 			return error.http404(req, reply, feedback);
 		}
 		return reply.view('edit.ejs', {
-			user: user,
 			post: post
 		});
 	});
 
-	fastify.post('/edit/:id', async (req, reply) => {
+	app.post('/edit/:id', async (req, reply) => {
 		var post, user;
 		try {
 			let id = parseInt(req.params.id);
 			post = await Post.load(id);
-			user = await User.current(req);
+			user = await app.site.checkUser(req);
 			if (! user || post.user.id != user.id) {
 				return error.http404(req, reply, `Sorry, you can’t edit that post.`);
 			}

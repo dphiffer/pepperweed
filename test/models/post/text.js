@@ -8,8 +8,8 @@ const User = require('../../../src/models/user');
 tap.test('text post parse content', async tap => {
 	let user = await User.create({
 		name: 'Post Maker',
-		slug: 'textpost',
-		email: 'tpmaker@test.test',
+		slug: 'textpmaker',
+		email: 'textpmaker@test.test',
 		password: 'alpine'
 	});
 
@@ -17,6 +17,5 @@ tap.test('text post parse content', async tap => {
 	post.update({
 		content: '[test](/test)'
 	});
-	// console.log(post);
 	tap.match(post.content, /<a href="\/test">test<\/a>/);
 });
