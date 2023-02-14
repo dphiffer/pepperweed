@@ -1,6 +1,6 @@
 {
   "name": "pepperweed",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Perennial media archive",
   "main": "src/server.js",
   "scripts": {
@@ -23,26 +23,26 @@
   "license": "MIT",
   "dependencies": {
     "@fastify/formbody": "^7.4.0",
-    "@fastify/secure-session": "^5.3.0",
-    "@fastify/static": "^6.8.0",
+    "@fastify/secure-session": "^6.0.0",
+    "@fastify/static": "^6.9.0",
     "@fastify/view": "^7.4.1",
     "bcrypt": "^5.1.0",
     "chokidar-cli": "^3.0.0",
     "ejs": "^3.1.8",
-    "fastify": "^4.12.0",
+    "fastify": "^4.13.0",
     "marked": "^4.2.12",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.40",
     "nodemailer": "^6.9.1",
     "npm-run-all": "^4.1.5",
-    "sass": "^1.57.1",
+    "sass": "^1.58.1",
     "source-sans": "^3.46.0",
     "sqlite": "^4.1.2",
     "sqlite3": "^5.1.4",
     "webpack-cli": "^5.0.1"
   },
   "devDependencies": {
-    "pino-pretty": "^8.0.0",
-    "tap": "^16.3.0"
+    "pino-pretty": "^9.2.0",
+    "tap": "^16.3.4"
   }
 }
