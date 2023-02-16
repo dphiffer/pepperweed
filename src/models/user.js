@@ -11,12 +11,32 @@ class User extends Base {
 		return this.data.slug;
 	}
 
+	set slug(slug) {
+		this.data.slug = slug;
+	}
+
 	get name() {
 		return this.data.name;
 	}
 
+	set name(name) {
+		this.data.name = name;
+	}
+
 	get email() {
 		return this.data.email;
+	}
+
+	set email(email) {
+		this.data.email = email;
+	}
+
+	get password() {
+		return this.data.password;
+	}
+
+	set password(password) {
+		this.data.password = password;
 	}
 
 	static async create(data) {
