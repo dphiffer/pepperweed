@@ -48,7 +48,13 @@ class UserQueries extends Queries {
 			    updated = CURRENT_TIMESTAMP
 			WHERE id = $id
 		`);
-		return stmt.run(user);
+		return stmt.run({
+			slug: user.slug,
+			name: user.name,
+			email: user.email,
+			password: user.password,
+			id: user.id
+		});
 	}
 
 	remove(user) {
