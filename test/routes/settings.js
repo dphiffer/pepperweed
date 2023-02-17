@@ -7,7 +7,7 @@ var cookies = null;
 var url = null;
 
 tap.test('user is not logged in', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/settings'
@@ -23,15 +23,15 @@ tap.test('user is not logged in', async tap => {
 });
 
 tap.test('load settings page', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/signup',
 		body: {
-			email: 'settings@test.test',
-			slug: 'settings',
-			name: 'Settings',
-			password: 'alpine'
+			email: 'settings-user@test.test',
+			slug: 'settings-user',
+			name: 'Settings User',
+			password: 'alpine123'
 		}
 	});
 	tap.equal(rsp.cookies[0].name, 'session');
@@ -49,7 +49,7 @@ tap.test('load settings page', async tap => {
 });
 
 tap.test('save settings', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/settings',
@@ -76,7 +76,7 @@ tap.test('save settings', async tap => {
 });
 
 tap.test('save settings without a site title', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/settings',
@@ -93,7 +93,7 @@ tap.test('save settings without a site title', async tap => {
 });
 
 tap.test('save settings without a from email', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/settings',
@@ -110,7 +110,7 @@ tap.test('save settings without a from email', async tap => {
 });
 
 tap.test('save settings without an smtp config', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/settings',
@@ -127,7 +127,7 @@ tap.test('save settings without an smtp config', async tap => {
 });
 
 tap.test('save settings enabling signup', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/settings',

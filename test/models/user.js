@@ -74,18 +74,20 @@ tap.test('user check password', tap => {
 
 tap.test('update user', tap => {
 	let update = User.load('test1@test.test');
+	update.name = 'Updated';
+	update.email = 'test2@test.test';
 	update.slug = 'test123';
 	update.save();
-	let load = User.load('test1@test.test');
+	let load = User.load('test2@test.test');
 	tap.equal(load.slug, 'test123');
 	tap.end();
 });
 
 tap.test('delete user', tap => {
-	let user = User.load('test1@test.test');
+	let user = User.load('test2@test.test');
 	user.remove();
 	try {
-		user = User.load('test1@test.test');
+		user = User.load('test2@test.test');
 	} catch (err) {
 		tap.ok(err instanceof Queries.NotFoundError);
 	}

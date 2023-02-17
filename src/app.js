@@ -43,7 +43,7 @@ function build(options = {}) {
 	app.register(require('./routes/auth'));
 	app.register(require('./routes/post'));
 	app.register(require('./routes/settings'));
-	app.setNotFoundHandler(async (req, reply) => {
+	app.setNotFoundHandler((req, reply) => {
 		app.site.checkUser(req);
 		const error = require('./routes/error');
 		let details = 'The requested page was not found.';

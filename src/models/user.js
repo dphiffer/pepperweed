@@ -119,7 +119,7 @@ class User extends Base {
 	async setPassword(password) {
 		let bcrypt = require('bcrypt');
 		let saltRounds = 10;
-		this.data.password = await bcrypt.hash(password, saltRounds);
+		this.password = await bcrypt.hash(password, saltRounds);
 		this.save();
 		return this;
 	}

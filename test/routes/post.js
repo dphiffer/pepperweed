@@ -10,7 +10,7 @@ var cookies = null;
 var url;
 
 tap.test('create new post without logging in', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/edit'
@@ -20,7 +20,7 @@ tap.test('create new post without logging in', async tap => {
 });
 
 tap.test('signup and create new post', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/signup',
@@ -60,7 +60,7 @@ tap.test('signup and create new post', async tap => {
 });
 
 tap.test('view post', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: url,
@@ -75,7 +75,7 @@ tap.test('view post', async tap => {
 });
 
 tap.test('edit post', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: url,
@@ -103,7 +103,7 @@ tap.test('edit post', async tap => {
 });
 
 tap.test('view post', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: url
@@ -112,7 +112,7 @@ tap.test('view post', async tap => {
 });
 
 tap.test('invalid post requests', async tap => {
-	let app = await build();
+	let app = build();
 	let slug = url.match(/\/(\w{40})$/)[1];
 
 	// Try to edit someone else's post

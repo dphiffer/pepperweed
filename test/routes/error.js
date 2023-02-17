@@ -4,7 +4,7 @@ const tap = require('tap');
 const build = require('../../src/app');
 
 tap.test('generate http 401', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/new'
@@ -13,7 +13,7 @@ tap.test('generate http 401', async tap => {
 });
 
 tap.test('generate http 404', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/tktktk'

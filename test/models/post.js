@@ -28,6 +28,7 @@ tap.test('create a post', async tap => {
 tap.test('load post by id', tap => {
 	let post = Post.load(postId);
 	tap.equal(post.id, postId);
+	tap.equal(post.created, post.updated);
 	try {
 		post = Post.load(99);
 	} catch (err) {

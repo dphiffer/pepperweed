@@ -6,7 +6,11 @@ const Post = require('../post');
 class TextPost extends Post {
 
 	get content() {
-		return this.attributes.values.parsedContent || '';
+		if (this.attributes.values &&
+		    this.attributes.values.parsedContent) {
+			return this.attributes.values.parsedContent;
+		}
+		return '';
 	}
 
 	static attributes() {
@@ -25,7 +29,7 @@ class TextPost extends Post {
 	}
 
 	init(attributes) {
-		if (attributes.values.content) {
+		if (attributes.values && attributes.values.content) {
 			attributes.values.parsedContent = marked.parse(attributes.values.content);
 		}
 		this.attributes = attributes;
