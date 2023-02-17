@@ -7,13 +7,12 @@ const User = require('../../../src/models/user');
 
 tap.test('text post parse content', async tap => {
 	let user = await User.create({
-		name: 'Post Maker',
-		slug: 'textpmaker',
-		email: 'textpmaker@test.test',
-		password: 'alpine'
+		name: 'Text Post Maker',
+		slug: 'text-post-maker',
+		email: 'text-post-maker@test.test',
+		password: 'alpine123'
 	});
-
-	let post = await Post.create(user, 'text');
+	let post = Post.create(user, 'text');
 	post.update({
 		content: '[test](/test)'
 	});

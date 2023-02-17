@@ -11,7 +11,7 @@ var cookies = null;
 var resetId = null;
 
 tap.test('user is not logged in', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/'
@@ -20,7 +20,7 @@ tap.test('user is not logged in', async tap => {
 });
 
 tap.test('signup page', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/signup'
@@ -29,7 +29,7 @@ tap.test('signup page', async tap => {
 });
 
 tap.test('invalid signup', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/signup',
@@ -44,7 +44,7 @@ tap.test('invalid signup', async tap => {
 });
 
 tap.test('valid signup', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/signup',
@@ -61,7 +61,7 @@ tap.test('valid signup', async tap => {
 });
 
 tap.test('user is logged in', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/',
@@ -73,7 +73,7 @@ tap.test('user is logged in', async tap => {
 });
 
 tap.test('signup page redirects if logged in', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/signup',
@@ -85,7 +85,7 @@ tap.test('signup page redirects if logged in', async tap => {
 });
 
 tap.test('login page redirects if logged in', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/login',
@@ -98,7 +98,7 @@ tap.test('login page redirects if logged in', async tap => {
 });
 
 tap.test('user logout', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/logout',
@@ -112,7 +112,7 @@ tap.test('user logout', async tap => {
 });
 
 tap.test('login page', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/login'
@@ -121,7 +121,7 @@ tap.test('login page', async tap => {
 });
 
 tap.test('incorrect login', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/login',
@@ -136,7 +136,7 @@ tap.test('incorrect login', async tap => {
 });
 
 tap.test('user login', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/login',
@@ -151,7 +151,7 @@ tap.test('user login', async tap => {
 });
 
 tap.test('login redirects', async tap => {
-	let app = await build();
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/login?redirect=/foo',
@@ -207,19 +207,19 @@ tap.test('login redirects', async tap => {
 	tap.equal(rsp.headers.location, '/');
 });
 
-tap.test('password reset config', async () => {
-	let app = await build();
-	await app.site.setOption('smtpConfig', 'smtp://user:password@test.test');
+tap.test('password reset config', tap => {
+	let app = build();
+	app.site.setOption('smtpConfig', 'smtp://user:password@test.test');
 	app.site.setupMailer();
 	tap.equal(app.site.smtpConfig, 'smtp://user:password@test.test');
-
 	app.site.setupMailer({
 		streamTransport: true
 	});
+	tap.end();
 });
 
-tap.test('password reset load page', async () => {
-	let app = await build();
+tap.test('password reset load page', async tap => {
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/password'
@@ -227,8 +227,8 @@ tap.test('password reset load page', async () => {
 	tap.equal(rsp.statusCode, 200);
 });
 
-tap.test('password reset redirect for logged in users', async () => {
-	let app = await build();
+tap.test('password reset redirect for logged in users', async tap => {
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/login',
@@ -281,8 +281,8 @@ tap.test('password reset redirect for logged in users', async () => {
 	tap.equal(rsp.headers.location, '/');
 });
 
-tap.test('password reset request', async () => {
-	let app = await build();
+tap.test('password reset request', async tap => {
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/password',
@@ -301,8 +301,8 @@ tap.test('password reset request', async () => {
 	resetId = url.match(/password\/(.+)$/)[1];
 });
 
-tap.test('password reset email does not exist', async () => {
-	let app = await build();
+tap.test('password reset email does not exist', async tap => {
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/password',
@@ -313,8 +313,8 @@ tap.test('password reset email does not exist', async () => {
 	tap.equal(rsp.statusCode, 200);
 });
 
-tap.test('password reset bogus request', async () => {
-	let app = await build();
+tap.test('password reset bogus request', async tap => {
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/password/tktk'
@@ -331,10 +331,10 @@ tap.test('password reset bogus request', async () => {
 	tap.equal(rsp.statusCode, 200);
 });
 
-tap.test('password reset enter code', async () => {
-	let app = await build();
+tap.test('password reset enter code', async tap => {
+	let app = build();
 	let db = require('../../src/db');
-	let reset = await db.user.loadPasswordReset(resetId);
+	let reset = db.user.loadPasswordReset(resetId);
 
 	let rsp = await app.inject({
 		method: 'POST',
@@ -349,8 +349,8 @@ tap.test('password reset enter code', async () => {
 	cookies = rsp.cookies;
 });
 
-tap.test('password reset change password', async () => {
-	let app = await build();
+tap.test('password reset change password', async tap => {
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/password/reset',
@@ -375,8 +375,8 @@ tap.test('password reset change password', async () => {
 	tap.equal(rsp.headers.location, '/');
 });
 
-tap.test('password reset not logged in', async () => {
-	let app = await build();
+tap.test('password reset not logged in', async tap => {
+	let app = build();
 	let rsp = await app.inject({
 		method: 'GET',
 		url: '/password/reset'
@@ -396,8 +396,8 @@ tap.test('password reset not logged in', async () => {
 	tap.equal(rsp.headers.location, '/password');
 });
 
-tap.test('password reset login with changed password', async () => {
-	let app = await build();
+tap.test('password reset login with changed password', async tap => {
+	let app = build();
 	let rsp = await app.inject({
 		method: 'POST',
 		url: '/login',
@@ -410,9 +410,9 @@ tap.test('password reset login with changed password', async () => {
 	tap.equal(rsp.cookies[0].name, 'session');
 });
 
-tap.test('disable signup', async () => {
-	let app = await build();
-	await app.site.setOption('signupEnabled', '0');
+tap.test('disable signup', async tap => {
+	let app = build();
+	app.site.setOption('signupEnabled', '0');
 
 	let rsp = await app.inject({
 		method: 'GET',
@@ -432,4 +432,5 @@ tap.test('disable signup', async () => {
 		}
 	});
 	tap.equal(rsp.statusCode, 400);
+	app.site.setOption('signupEnabled', '1');
 });

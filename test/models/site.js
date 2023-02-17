@@ -4,41 +4,42 @@ const tap = require('tap');
 const fs = require('fs');
 const build = require('../../src/app');
 
-var app;
-tap.before(async () => {
-	app = await build();
+tap.test('site sessionKey', tap => {
+	let app = build();
+	tap.equal(app.site.getOption('sessionKey').length, 64);
+	tap.end();
 });
 
-tap.test('site sessionKey', async tap => {
-	let sessionKey = await app.site.getOption('sessionKey');
-	tap.equal(sessionKey.length, 64);
+tap.test('site missing option', tap => {
+	let app = build();
+	tap.equal(app.site.getOption('tk-does-not-exist'), null);
+	tap.end();
 });
 
-tap.test('site missing option', async tap => {
-	let doesNotExist = await app.site.getOption('test');
-	tap.equal(doesNotExist, null);
+tap.test('site create option', tap => {
+	let app = build();
+	app.site.setOption('test', 'test');
+	tap.equal(app.site.getOption('test'), 'test');
+	tap.end();
 });
 
-tap.test('site create option', async tap => {
-	await app.site.setOption('test', 'test');
-	let option = await app.site.getOption('test');
-	tap.equal(option, 'test');
+tap.test('site update option', tap => {
+	let app = build();
+	app.site.setOption('test', 'updated');
+	tap.equal(app.site.getOption('test'), 'updated');
+	tap.end();
 });
 
-tap.test('site update option', async tap => {
-	await app.site.setOption('test', 'updated');
-	let option = await app.site.getOption('test');
-	tap.equal(option, 'updated');
+tap.test('site remove option', tap => {
+	let app = build();
+	app.site.removeOption('test');
+	tap.equal(app.site.getOption('test'), null);
+	tap.end();
 });
 
-tap.test('site remove option', async tap => {
-	await app.site.removeOption('test');
-	let option = await app.site.getOption('test');
-	tap.equal(option, null);
-});
-
-tap.test('site remove nonexistant option', async tap => {
-	await app.site.removeOption('test2');
-	let option = await app.site.getOption('test2');
-	tap.equal(option, null);
+tap.test('site remove non-existant option', tap => {
+	let app = build();
+	app.site.removeOption('test2');
+	tap.equal(app.site.getOption('test2'), null);
+	tap.end();
 });
