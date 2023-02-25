@@ -25,20 +25,20 @@ class Site {
 		return (this.options.signupEnabled == '1');
 	}
 
-	async setup() {
+	setup() {
 		let db = require('../db');
-		this.options = await db.option.all();
-		await this.setupSessions();
-		await this.setupMailer();
+		this.options = db.option.all();
+		this.setupSessions();
+		this.setupMailer();
 	}
 
-	async setupSessions() {
-		let sessionKey = await this.getOption('sessionKey');
+	setupSessions() {
+		let sessionKey = this.getOption('sessionKey');
 		if (! sessionKey) {
 			let sodium = require('sodium-native');
 			let buffer = Buffer.allocUnsafe(sodium.crypto_secretbox_KEYBYTES);
 			sodium.randombytes_buf(buffer);
-			await this.setOption('sessionKey', buffer.toString('hex'));
+			this.setOption('sessionKey', buffer.toString('hex'));
 		}
 	}
 
@@ -56,37 +56,37 @@ class Site {
 		this.mailer = nodemailer.createTransport(config);
 	}
 
-	async setOption(key, value) {
+	setOption(key, value) {
 		let db = require('../db');
-		let exists = await db.option.load(key, null);
+		let exists = db.option.load(key, null);
 		if (! exists) {
-			await db.option.create(key, value);
+			db.option.create(key, value);
 		} else {
-			await db.option.update(key, value);
+			db.option.update(key, value);
 		}
 		this.options[key] = value;
 	}
 
-	async getOption(key, defaultValue = null) {
+	getOption(key, defaultValue = null) {
 		let db = require('../db');
 		if (typeof this.options[key] != 'undefined') {
 			return this.options[key];
 		}
-		let value = await db.option.load(key, defaultValue);
+		let value = db.option.load(key, defaultValue);
 		this.options[key] = value;
 		return value;
 	}
 
-	async removeOption(key) {
+	removeOption(key) {
 		let db = require('../db');
 		if (typeof this.options[key] != 'undefined') {
 			delete this.options[key];
 		}
-		await db.option.remove(key);
+		db.option.remove(key);
 	}
 
-	async checkUser(req) {
-		this.user = await User.current(req);
+	checkUser(req) {
+		this.user = User.current(req);
 		return this.user;
 	}
 }

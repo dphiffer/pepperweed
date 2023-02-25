@@ -11,12 +11,32 @@ class User extends Base {
 		return this.data.slug;
 	}
 
+	set slug(slug) {
+		this.data.slug = slug;
+	}
+
 	get name() {
 		return this.data.name;
 	}
 
+	set name(name) {
+		this.data.name = name;
+	}
+
 	get email() {
 		return this.data.email;
+	}
+
+	set email(email) {
+		this.data.email = email;
+	}
+
+	get password() {
+		return this.data.password;
+	}
+
+	set password(password) {
+		this.data.password = password;
 	}
 
 	static async create(data) {
@@ -24,32 +44,31 @@ class User extends Base {
 		let bcrypt = require('bcrypt');
 		let saltRounds = 10;
 		data.password = await bcrypt.hash(data.password, saltRounds);
-		data.id = await db.user.create(data);
+		data.id = db.user.create(data);
 		return new User(data);
 	}
 
-	static async current(req) {
+	static current(req) {
 		let id = req.session.get('user');
 		if (id) {
-			let user = await User.load(id);
-			return user;
+			return User.load(id);
 		} else {
 			return null;
 		}
 	}
 
-	static async load(id) {
+	static load(id) {
 		let db = require('../db');
 		let data = null;
 		let emailRegex = /^\w+@\w+\.\w+$/;
 		let slugRegex = /^[a-z0-9_-]+$/i;
 		if (typeof id == 'number') {
-			data = await db.user.load('id', id);
+			data = db.user.load('id', id);
 		} else if (typeof id == 'string') {
 			if (id.match(emailRegex)) {
-				data = await db.user.load('email', id);
+				data = db.user.load('email', id);
 			} else if (id.match(slugRegex)) {
-				data = await db.user.load('slug', id);
+				data = db.user.load('slug', id);
 			}
 		}
 		if (! data) {
@@ -58,9 +77,9 @@ class User extends Base {
 		return new User(data);
 	}
 
-	static async resetPassword(app, email) {
+	static resetPassword(app, email) {
 		let db = require('../db');
-		let user = await User.load(email);
+		let user = User.load(email);
 		let id = crypto.randomBytes(20).toString('hex');
 		let code = Math.floor(Math.random() * 1000000);
 		code = ('000000' + code).substr(-6, 6);
@@ -70,26 +89,24 @@ class User extends Base {
 			subject: `${app.site.title} password reset`,
 			text: `Your password reset code is: ${code}`
 		});
-		await db.user.createPasswordReset(id, user.id, code);
+		db.user.createPasswordReset(id, user.id, code);
 		return id;
 	}
 
-	static async checkPasswordReset(id, code) {
+	static checkPasswordReset(id, code) {
 		let db = require('../db');
-		let reset = await db.user.loadPasswordReset(id);
+		let reset = db.user.loadPasswordReset(id);
 		if (reset && reset.code == code) {
-			let db = require('../db');
-			await db.user.updatePasswordReset(id, 'done');
-			let user = await User.load(reset.user_id);
-			return user;
+			db.user.updatePasswordReset(id, 'done');
+			return User.load(reset.user_id);
 		}
 		return null;
 	}
 
-	async save() {
+	save() {
 		let db = require('../db');
-		await db.user.update(this);
-		this.data = await db.user.load('id', this.id);
+		db.user.update(this);
+		this.data = db.user.load('id', this.id);
 		return this;
 	}
 
@@ -102,14 +119,14 @@ class User extends Base {
 	async setPassword(password) {
 		let bcrypt = require('bcrypt');
 		let saltRounds = 10;
-		this.data.password = await bcrypt.hash(password, saltRounds);
-		await this.save();
+		this.password = await bcrypt.hash(password, saltRounds);
+		this.save();
 		return this;
 	}
 
-	async remove() {
+	remove() {
 		let db = require('../db');
-		await db.user.remove(this);
+		db.user.remove(this);
 	}
 
 }

@@ -4,47 +4,42 @@ const Queries = require('./queries');
 
 class UserQueries extends Queries {
 
-	async load(key, value) {
+	load(key, value) {
 		let validKeys = ['id', 'email', 'slug'];
 		if (validKeys.indexOf(key) == -1) {
 			throw new Queries.InvalidInputError(`Cannot load user by '${key}'.`);
 		}
-		let db = await this.connect();
-		let data = await db.get(`
+		let db = this.connect();
+		let stmt = db.prepare(`
 			SELECT *
 			FROM user
 			WHERE ${key} = ?
-		`, value);
+		`);
+		let data = stmt.get(value);
 		if (! data) {
 			throw new Queries.NotFoundError(`User with ${key} '${value}' not found.`);
 		}
 		return data;
 	}
 
-	async create(data) {
-		let db = await this.connect();
-		await this.validateSlug(data.slug);
-		await this.validateName(data.name);
-		await this.validateEmail(data.email);
-		await this.validatePassword(data.password);
-		let rsp = await db.run(`
+	create(user) {
+		let db = this.connect();
+		this.validateSlug(user.slug);
+		this.validateName(user.name);
+		this.validateEmail(user.email);
+		this.validatePassword(user.password);
+		let stmt = db.prepare(`
 			INSERT INTO user
 			(slug, name, email, password, created, updated)
 			VALUES ($slug, $name, $email, $password, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-		`, {
-			$slug: data.slug,
-			$name: data.name,
-			$email: data.email,
-			$password: data.password
-		});
-		return rsp.lastID;
+		`);
+		let info = stmt.run(user);
+		return info.lastInsertRowid;
 	}
 
-	async update(user) {
-		let db = await this.connect();
-		let data = await this.load('id', user.id);
-		data = Object.assign(data, user.data);
-		let rsp = await db.run(`
+	update(user) {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			UPDATE user
 			SET slug = $slug,
 			    name = $name,
@@ -52,32 +47,35 @@ class UserQueries extends Queries {
 			    password = $password,
 			    updated = CURRENT_TIMESTAMP
 			WHERE id = $id
-		`, {
-			$slug: data.slug,
-			$name: data.name,
-			$email: data.email,
-			$password: data.password,
-			$id: user.id
+		`);
+		return stmt.run({
+			slug: user.slug,
+			name: user.name,
+			email: user.email,
+			password: user.password,
+			id: user.id
 		});
-		return rsp;
 	}
 
-	async remove(user) {
-		let db = await this.connect();
-		let rsp = await db.run(`
+	remove(user) {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			DELETE FROM user
 			WHERE id = ?
-		`, user.id);
-		return rsp;
+		`);
+		return stmt.run(user.id);
 	}
 
-	async validateSlug(slug) {
+	validateSlug(slug) {
 		let staticRoutes = [
+			'register',
 			'signup',
 			'login',
 			'logout',
 			'new',
-			'edit'
+			'edit',
+			'password',
+			'settings'
 		];
 		if (! slug) {
 			throw new Queries.InvalidInputError('Please enter a username.');
@@ -85,42 +83,44 @@ class UserQueries extends Queries {
 		if (staticRoutes.indexOf(slug) > -1) {
 			throw new Queries.InvalidInputError('Sorry, that is an invalid username.');
 		}
-		let db = await this.connect();
-		let exists = await db.get(`
+		let db = this.connect();
+		let stmt = db.prepare(`
 			SELECT id
 			FROM user
 			WHERE slug = ?
-		`, slug);
+		`);
+		let exists = stmt.get(slug);
 		if (exists) {
 			throw new Queries.InvalidInputError('Sorry, that username is taken.');
 		}
 	}
 
-	async validateName(name) {
+	validateName(name) {
 		if (! name) {
 			throw new Queries.InvalidInputError('Please enter a name.');
 		}
 	}
 
-	async validateEmail(email) {
+	validateEmail(email) {
 		if (! email) {
 			throw new Queries.InvalidInputError('Please enter an email address.');
 		}
 		if (email.indexOf('@') == -1) {
 			throw new Queries.InvalidInputError('Please enter a valid email address.');
 		}
-		let db = await this.connect();
-		let exists = await db.get(`
+		let db = this.connect();
+		let stmt = db.prepare(`
 			SELECT id
 			FROM user
 			WHERE email = ?
-		`, email);
+		`);
+		let exists = stmt.get(email);
 		if (exists) {
 			throw new Queries.InvalidInputError('Sorry, that email has already registered an account.');
 		}
 	}
 
-	async validatePassword(password) {
+	validatePassword(password) {
 		if (! password) {
 			throw new Queries.InvalidInputError('Please enter a password.');
 		}
@@ -129,46 +129,43 @@ class UserQueries extends Queries {
 		}
 	}
 
-	async createPasswordReset(id, user_id, code) {
-		let db = await this.connect();
-		let rsp = await db.run(`
+	createPasswordReset(id, userId, code) {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			INSERT INTO password_reset
 			(id, user_id, code, status, created, updated)
 			VALUES ($id, $user_id, $code, $status, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-		`, {
-			$id: id,
-			$user_id: user_id,
-			$code: code,
-			$status: 'created'
+		`);
+		let info = stmt.run({
+			id: id,
+			user_id: userId,
+			code: code,
+			status: 'created'
 		});
-		let reset = await this.loadPasswordReset(rsp.lastID);
-		return reset;
+		return this.loadPasswordReset(id);
 	}
 
-	async loadPasswordReset(id) {
-		let db = await this.connect();
-		let data = await db.get(`
+	loadPasswordReset(id) {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			SELECT *
 			FROM password_reset
 			WHERE id = ?
-		`, id);
-		if (data) {
-			await this.updatePasswordReset(id, 'loaded');
-		}
-		return data;
+		`);
+		return stmt.get(id);
 	}
 
-	async updatePasswordReset(id, status) {
-		let db = await this.connect();
-		let rsp = await db.run(`
+	updatePasswordReset(id, status) {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			UPDATE password_reset
 			SET status = $status
 			WHERE id = $id
-		`, {
-			$id: id,
-			$status: status
+		`);
+		return stmt.run({
+			id: id,
+			status: status
 		});
-		return rsp;
 	}
 
 }

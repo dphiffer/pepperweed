@@ -1,10 +1,9 @@
 'use strict';
 
+const build = require('./app');
+
 (async () => {
 	try {
-		if (! process.env.DATABASE) {
-			process.env.DATABASE = './data/main.db';
-		}
 		let loggerTransport = process.env.ENVIRONMENT == 'development' ? {
 			target: 'pino-pretty',
 			options: {
@@ -13,13 +12,13 @@
 				messageFormat: '{msg} {req.method} {req.url}'
 			}
 		} : undefined;
-		const server = await require('./app')({
+		const app = build({
 			logger: {
 				transport: loggerTransport
 			},
 			ignoreTrailingSlash: true
 		});
-		await server.listen({
+		app.listen({
 			port: process.env.PORT || 3000,
 			host: process.env.HOST || '0.0.0.0'
 		});

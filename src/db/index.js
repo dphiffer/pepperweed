@@ -1,34 +1,55 @@
 'use strict';
 
-let fs = require('fs');
-let path = require('path');
-let os = require('os');
-let sqlite3 = require('sqlite3');
-let sqlite = require('sqlite');
+const Database = require('better-sqlite3');
+const fs = require('fs');
+const glob = require('glob');
+const path = require('path');
 
-let db = null;
-let db_path = process.env.DATABASE;
-let exists = fs.existsSync(db_path);
+var connections = {};
 
-const connect = async () => {
-	if (db) {
-		return db;
+function connect(connectPath) {
+	let dbPath = getPath(connectPath);
+	if (connections[dbPath]) {
+		return connections[dbPath];
 	}
-	db = await sqlite.open({
-		filename: db_path,
-		driver: sqlite3.Database
-	});
-	if (! exists) {
-		await db.migrate({
-			migrationsPath: path.join(__dirname, 'migrations')
-		});
-		exists = true;
+	let db = new Database(dbPath);
+	migrate(db, dbPath);
+	connections[dbPath] = db;
+	return db;
+}
+
+function getPath(dbPath) {
+	dbPath = dbPath || process.env.DATABASE || 'main.db';
+	if (dbPath.indexOf('/') < 0 && dbPath.indexOf('\\') < 0) {
+		dbPath = path.join('.', 'data', dbPath);
+	}
+	return path.resolve(dbPath);
+}
+
+function migrate(db, dbPath) {
+	let dbVersion = db.pragma('user_version', { simple: true });
+	let migrationsDir = path.join(path.dirname(dbPath), 'migrations');
+	let migrations = glob.sync(path.join(migrationsDir, '*.sql'));
+	migrations.sort();
+	for (let file of migrations) {
+		let versionMatch = path.basename(file).match(/^\d+/);
+		if (versionMatch) {
+			let migrationVersion = parseInt(versionMatch[0]);
+			if (dbVersion < migrationVersion) {
+				db.transaction(() => {
+					let sql = fs.readFileSync(file, 'utf8');
+					db.exec(sql);
+				})();
+			}
+			db.pragma(`user_version = ${migrationVersion}`);
+		}
 	}
 	return db;
-};
+}
 
 module.exports = {
 	connect: connect,
+	path: getPath,
 	option: require('./option')(connect),
 	post: require('./post')(connect),
 	user: require('./user')(connect)
