@@ -40,6 +40,7 @@ tap.test('initalize first account', async tap => {
 			password: 'alpine123'
 		}
 	});
+	console.log(rsp.payload);
 	cookies = rsp.cookies;
 	tap.equal(rsp.cookies[0].name, 'session');
 	tap.equal(rsp.statusCode, 302);
@@ -91,4 +92,8 @@ tap.test('initialize first post', async tap => {
 	});
 	tap.equal(rsp.statusCode, 302);
 	tap.equal(app.site.options.initialize, 3);
+});
+
+tap.teardown(() => {
+	fs.unlinkSync(process.env.DATABASE);
 });
