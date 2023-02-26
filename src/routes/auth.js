@@ -33,6 +33,10 @@ module.exports = (app, opts, done) => {
 				password: values.password
 			})
 			req.session.set('user', user.id);
+			if (! app.site.options.initialize) {
+				app.site.setOption('initialize', 1);
+				return reply.redirect('/settings');
+			}
 			return reply.redirect('/');
 		} catch (err) {
 			return reply.code(400).view('auth/signup.ejs', {
@@ -50,6 +54,9 @@ module.exports = (app, opts, done) => {
 		}
 		if (user) {
 			return reply.redirect(redirect);
+		}
+		if (! app.site.options.initialize) {
+			return reply.redirect('/signup');
 		}
 		return reply.view('auth/login.ejs', {
 			feedback: null,

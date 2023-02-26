@@ -1,13 +1,23 @@
 <form action="<%= post.edit_url %>" method="post">
-	<h2><%= post.id == 'new' ? 'New post' : 'Edit post' %></h2>
-	<label>
-		Title
-		<input type="text" name="title" value="<%= post.title %>">
-	</label>
+	<% if (post.id == 'new' && site.options.initialize < 3) { %>
+		<h2>Write your first post</h2>
+	<% } else if (post.id == 'new') { %>
+		<h2>New post</h2>
+	<% } else { %>
+		<h2>Edit post</h2>
+	<% } %>
+	<div class="field">
+		<label>
+			Title
+			<input type="text" name="title" value="<%= post.title %>">
+		</label>
+	</div>
 	<% for (let field of post.attributes.fields) { %>
-		<%- include(`edit/${field.type}`, {
-			field: field
-		}); %>
+		<div class="field">
+			<%- include(`edit/${field.type}`, {
+				field: field
+			}); %>
+		</div>
 	<% } %>
 	<input type="submit" value="Save">
 </form>

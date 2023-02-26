@@ -17,4 +17,7 @@ tap.test('text post parse content', async tap => {
 		content: '[test](/test)'
 	});
 	tap.match(post.content, /<a href="\/test">test<\/a>/);
+
+	let load = Post.load(post.id);
+	tap.match(load.content, /<a href="\/test">test<\/a>/);
 });

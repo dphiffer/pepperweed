@@ -46,6 +46,10 @@ module.exports = (app, opts, done) => {
 				feedback: feedback
 			});
 		} else {
+			if (app.site.options.initialize < 2) {
+				app.site.setOption('initialize', 2);
+				return reply.redirect('/edit');
+			}
 			return reply.redirect('/');
 		}
 	});

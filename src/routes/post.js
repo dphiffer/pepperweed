@@ -7,10 +7,10 @@ const error = require('./error');
 
 module.exports = (app, opts, done) => {
 
-	app.get('/:user/:post', async (req, reply) => {
-		await app.site.checkUser(req);
-		let user = await User.load(req.params.user);
-		let post = await Post.load(req.params.post);
+	app.get('/:user/:post', (req, reply) => {
+		app.site.checkUser(req);
+		let user = User.load(req.params.user);
+		let post = Post.load(req.params.post);
 		if (post.user.id != user.id) {
 			return error.http404(req, reply);
 		}
@@ -20,8 +20,8 @@ module.exports = (app, opts, done) => {
 		});
 	});
 
-	app.get('/edit', async (req, reply) => {
-		let user = await app.site.checkUser(req);
+	app.get('/edit', (req, reply) => {
+		let user = app.site.checkUser(req);
 		if (! user) {
 			return reply.redirect('/login?redirect=/edit');
 		}
@@ -34,16 +34,19 @@ module.exports = (app, opts, done) => {
 		});
 	});
 
-	app.post('/new', async (req, reply) => {
-		let user = await app.site.checkUser(req);
+	app.post('/new', (req, reply) => {
+		let user = app.site.checkUser(req);
 		if (! user) {
 			return error.http401(req, reply, `Sorry, you need to login before
 				you can create a new post.`);
 		}
-		let post = await Post.create(user, 'text');
+		let post = Post.create(user, 'text');
 		post.data.title = req.body.title;
 		post.update(req.body);
-		await post.save();
+		post.save();
+		if (app.site.options.initialize < 3) {
+			app.site.setOption('initialize', 3);
+		}
 		return reply.redirect(post.url);
 	});
 

@@ -35,13 +35,14 @@ textarea {
 
 input[type="submit"] {
 	border: 0;
-	border-radius: 4px;
+	border-radius: 5px;
 	color: $c-light;
 	background-color: $c-accent;
 	white-space: nowrap;
 	text-decoration: none;
 	cursor: pointer;
 	transition: 0.1s background-color ease-out;
+	padding: 10px 15px;
 
 	&:hover {
 		background-color: $c-dark;
