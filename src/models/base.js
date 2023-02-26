@@ -2,12 +2,13 @@
 
 class Base {
 
-	id = null;
 	data = {};
 
+	get id() {
+		return this.data.id;
+	}
+
 	constructor(init) {
-		this.id = init.id;
-		delete init.id;
 		this.data = init;
 	}
 }

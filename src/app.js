@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 var app = null;
 
-async function build(options = {}) {
+function build(options = {}) {
 	if (app) {
 		return app;
 	}
@@ -18,7 +18,7 @@ async function build(options = {}) {
 	app.register(require('@fastify/formbody'));
 
 	app.site = require('./models/site');
-	await app.site.setup();
+	app.site.setup();
 
 	app.register(require('@fastify/view'), {
 		engine: {
@@ -31,7 +31,7 @@ async function build(options = {}) {
 		layout: 'layout.ejs'
 	});
 
-	let sessionKey = await app.site.getOption('sessionKey');
+	let sessionKey = app.site.getOption('sessionKey');
 	app.register(require('@fastify/secure-session'), {
 		key: Buffer.from(sessionKey, 'hex'),
 		cookie: {
@@ -43,8 +43,8 @@ async function build(options = {}) {
 	app.register(require('./routes/auth'));
 	app.register(require('./routes/post'));
 	app.register(require('./routes/settings'));
-	app.setNotFoundHandler(async (req, reply) => {
-		await app.site.checkUser(req);
+	app.setNotFoundHandler((req, reply) => {
+		app.site.checkUser(req);
 		const error = require('./routes/error');
 		let details = 'The requested page was not found.';
 		return error.http404(req, reply, details);

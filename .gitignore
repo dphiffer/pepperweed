@@ -1,6 +1,5 @@
 .DS_Store
 .nyc_output
-node_modules
-/*.db
-/conf/secrets.js
+/node_modules
 /static/*
+/data/*.db

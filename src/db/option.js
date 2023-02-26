@@ -4,63 +4,68 @@ const Queries = require('./queries');
 
 class OptionQueries extends Queries {
 
-	async all() {
-		let db = await this.connect();
-		let rsp = await db.all(`
+	all() {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			SELECT key, value
 			FROM option
 		`);
-		let all = {};
+		let rsp = stmt.all();
+		let options = {};
 		for (let option of rsp) {
-			all[option.key] = option.value;
+			options[option.key] = option.value;
 		}
-		return all;
+		return options;
 	}
 
-	async load(key, defaultValue = null) {
-		let db = await this.connect();
-		let rsp = await db.get(`
+	load(key, defaultValue = null) {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			SELECT value
 			FROM option
 			WHERE key = ?
-		`, key);
+		`);
+		let rsp = stmt.get(key);
 		if (! rsp) {
 			return defaultValue;
 		}
 		return rsp.value;
 	}
 
-	async create(key, value) {
-		let db = await this.connect();
-		await db.run(`
+	create(key, value) {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			INSERT INTO option
 			(key, value, created, updated)
 			VALUES ($key, $value, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-		`, {
-			$key: key,
-			$value: value
+		`);
+		stmt.run({
+			key: key,
+			value: value
 		});
 	}
 
-	async update(key, value) {
-		let db = await this.connect();
-		await db.run(`
+	update(key, value) {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			UPDATE option
 			SET value = $value,
 			    updated = CURRENT_TIMESTAMP
 			WHERE key = $key
-		`, {
-			$key: key,
-			$value: value
+		`);
+		return stmt.run({
+			key: key,
+			value: value
 		});
 	}
 
-	async remove(key) {
-		let db = await this.connect();
-		await db.run(`
+	remove(key) {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			DELETE FROM option
 			WHERE key = ?
-		`, key);
+		`);
+		return stmt.run(key);
 	}
 
 }

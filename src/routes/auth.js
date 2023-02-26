@@ -4,8 +4,8 @@ const User = require('../models/user');
 
 module.exports = (app, opts, done) => {
 
-	app.get('/signup', async (req, reply) => {
-		let user = await app.site.checkUser(req);
+	app.get('/signup', (req, reply) => {
+		let user = app.site.checkUser(req);
 		if (user) {
 			return reply.redirect('/');
 		}
@@ -33,6 +33,10 @@ module.exports = (app, opts, done) => {
 				password: values.password
 			})
 			req.session.set('user', user.id);
+			if (! app.site.options.initialize) {
+				app.site.setOption('initialize', 1);
+				return reply.redirect('/settings');
+			}
 			return reply.redirect('/');
 		} catch (err) {
 			return reply.code(400).view('auth/signup.ejs', {
@@ -42,14 +46,17 @@ module.exports = (app, opts, done) => {
 		}
 	});
 
-	app.get('/login', async (req, reply) => {
-		let user = await app.site.checkUser(req);
+	app.get('/login', (req, reply) => {
+		let user = app.site.checkUser(req);
 		let redirect = req.query.redirect || '/';
 		if (redirect.substr(0, 1) != '/' || redirect.substr(0, 6) == '/login') {
 			redirect = '/';
 		}
 		if (user) {
 			return reply.redirect(redirect);
+		}
+		if (! app.site.options.initialize) {
+			return reply.redirect('/signup');
 		}
 		return reply.view('auth/login.ejs', {
 			feedback: null,
@@ -68,7 +75,7 @@ module.exports = (app, opts, done) => {
 			if (redirect.substr(0, 1) != '/' || redirect.substr(0, 6) == '/login') {
 				redirect = '/';
 			}
-			let user = await User.load(values.email, 'email');
+			let user = User.load(values.email, 'email');
 			let valid = await user.checkPassword(values.password);
 			if (valid) {
 				req.session.set('user', user.id);
@@ -82,13 +89,13 @@ module.exports = (app, opts, done) => {
 		});
 	});
 
-	app.get('/logout', async (req, reply) => {
+	app.get('/logout', (req, reply) => {
 		req.session.delete();
 		return reply.redirect('/login');
 	});
 
-	app.get('/password', async (req, reply) => {
-		let user = await app.site.checkUser(req);
+	app.get('/password', (req, reply) => {
+		let user = app.site.checkUser(req);
 		if (user) {
 			return reply.redirect('/');
 		}
@@ -98,13 +105,13 @@ module.exports = (app, opts, done) => {
 		});
 	});
 
-	app.post('/password', async (req, reply) => {
-		let user = await app.site.checkUser(req);
+	app.post('/password', (req, reply) => {
+		let user = app.site.checkUser(req);
 		if (user) {
 			return reply.redirect('/');
 		}
 		try {
-			let resetId = await User.resetPassword(app, req.body.email);
+			let resetId = User.resetPassword(app, req.body.email);
 			return reply.redirect(`/password/${resetId}`);
 		} catch (err) {
 			return reply.view('auth/password.ejs', {
@@ -116,8 +123,8 @@ module.exports = (app, opts, done) => {
 		}
 	});
 
-	app.get('/password/:id', async (req, reply) => {
-		let user = await app.site.checkUser(req);
+	app.get('/password/:id', (req, reply) => {
+		let user = app.site.checkUser(req);
 		if (user) {
 			return reply.redirect('/');
 		}
@@ -127,12 +134,12 @@ module.exports = (app, opts, done) => {
 		});
 	});
 
-	app.post('/password/:id', async (req, reply) => {
-		let user = await app.site.checkUser(req);
+	app.post('/password/:id', (req, reply) => {
+		let user = app.site.checkUser(req);
 		if (user) {
 			return reply.redirect('/');
 		}
-		user = await User.checkPasswordReset(req.params.id, req.body.code);
+		user = User.checkPasswordReset(req.params.id, req.body.code);
 		if (user) {
 			req.session.set('user', user.id);
 			return reply.redirect('/password/reset');
@@ -144,8 +151,8 @@ module.exports = (app, opts, done) => {
 		}
 	});
 
-	app.get('/password/reset', async (req, reply) => {
-		let user = await app.site.checkUser(req);
+	app.get('/password/reset', (req, reply) => {
+		let user = app.site.checkUser(req);
 		if (! user) {
 			return reply.redirect('/password');
 		}
@@ -155,7 +162,7 @@ module.exports = (app, opts, done) => {
 	});
 
 	app.post('/password/reset', async (req, reply) => {
-		let user = await app.site.checkUser(req);
+		let user = app.site.checkUser(req);
 		if (! user) {
 			return reply.redirect('/password');
 		}

@@ -1,6 +1,6 @@
 {
   "name": "pepperweed",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "Perennial media archive",
   "main": "src/server.js",
   "scripts": {
@@ -27,9 +27,11 @@
     "@fastify/static": "^6.9.0",
     "@fastify/view": "^7.4.1",
     "bcrypt": "^5.1.0",
+    "better-sqlite3": "^8.1.0",
     "chokidar-cli": "^3.0.0",
     "ejs": "^3.1.8",
     "fastify": "^4.13.0",
+    "glob": "^8.1.0",
     "marked": "^4.2.12",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.40",
@@ -37,8 +39,6 @@
     "npm-run-all": "^4.1.5",
     "sass": "^1.58.1",
     "source-sans": "^3.46.0",
-    "sqlite": "^4.1.2",
-    "sqlite3": "^5.1.4",
     "webpack-cli": "^5.0.1"
   },
   "devDependencies": {

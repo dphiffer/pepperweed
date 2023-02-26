@@ -13,8 +13,8 @@
 		<input type="text" name="smtpConfig" value="<%= site.smtpConfig %>" placeholder="smtps://user:password@smtp.example.com">
 	</div>
 	<div class="field">
-		<input type="checkbox" id="signupsEnabled" name="signupsEnabled" value="1"<% if (site.signupsEnabled) { %> checked="checked"<% } %> class="switch">
-		<label for="signupsEnabled">Allow new users to sign up</label>
+		<input type="checkbox" id="signupEnabled" name="signupEnabled" value="1"<% if (site.signupEnabled) { %> checked="checked"<% } %> class="switch">
+		<label for="signupEnabled">Allow new users to sign up</label>
 	</div>
 	<% if (feedback) { %>
 		<div class="feedback">

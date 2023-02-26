@@ -4,31 +4,33 @@ const Queries = require('./queries');
 
 class PostQueries extends Queries {
 
-	async query() {
-		let db = await this.connect();
-		let query = await db.all(`
+	query() {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			SELECT *
 			FROM post
 			ORDER BY created DESC
 			LIMIT 10
 		`);
+		let query = stmt.all();
 		query.forEach(data => {
 			data.attributes = JSON.parse(data.attributes);
 		});
 		return query;
 	}
 
-	async load(key, value) {
+	load(key, value) {
 		let validKeys = ['id', 'slug'];
 		if (validKeys.indexOf(key) == -1) {
 			throw new Queries.InvalidInputError(`Cannot load post by '${key}'`);
 		}
-		let db = await this.connect();
-		let data = await db.get(`
+		let db = this.connect();
+		let stmt = db.prepare(`
 			SELECT *
 			FROM post
 			WHERE ${key} = ?
-		`, value);
+		`);
+		let data = stmt.get(value);
 		if (! data) {
 			throw new Queries.NotFoundError(`Could not find that post`);
 		}
@@ -36,48 +38,48 @@ class PostQueries extends Queries {
 		return data;
 	}
 
-	async create(user, slug, attributes) {
-		let db = await this.connect();
-		let rsp = await db.run(`
+	create(user, slug, attributes) {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			INSERT INTO post
 			(user_id, slug, attributes, created, updated)
 			VALUES ($user_id, $slug, $attributes, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-		`, {
-			$user_id: user.id,
-			$slug: slug,
-			$attributes: JSON.stringify(attributes)
+		`);
+		let info = stmt.run({
+			user_id: user.id,
+			slug: slug,
+			attributes: JSON.stringify(attributes)
 		});
-		let post = await this.load('id', rsp.lastID);
-		return post;
+		return this.load('id', info.lastInsertRowid);
 	}
 
-	async update(post) {
-		let db = await this.connect();
-		let data = await this.load('id', post.id);
+	update(post) {
+		let db = this.connect();
+		let data = this.load('id', post.id);
 		Object.assign(data, post.data);
-		let rsp = await db.run(`
+		let stmt = db.prepare(`
 			UPDATE post
 			SET slug = $slug,
 			    title = $title,
 			    attributes = $attributes,
 			    updated = CURRENT_TIMESTAMP
 			WHERE id = $id
-		`, {
-			$slug: data.slug,
-			$title: data.title,
-			$attributes: JSON.stringify(post.attributes),
-			$id: post.id
+		`);
+		return stmt.run({
+			slug: data.slug,
+			title: data.title,
+			attributes: JSON.stringify(post.attributes),
+			id: post.id
 		});
-		return rsp;
 	}
 
-	async remove(post) {
-		let db = await this.connect();
-		let rsp = await db.run(`
+	remove(post) {
+		let db = this.connect();
+		let stmt = db.prepare(`
 			DELETE FROM post
 			WHERE id = ?
-		`, post.id);
-		return rsp;
+		`);
+		return stmt.run(post.id);
 	}
 
 }
